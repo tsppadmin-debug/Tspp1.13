@@ -1,0 +1,314 @@
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  -webkit-overflow-scrolling: touch;
+}
+
+.parallax-bg {
+  background-attachment: fixed;
+  background-position: center;
+  background-size: cover;
+  will-change: transform;
+}
+
+.section-content,
+.kinetic-reveal,
+.reveal-item,
+.kinetic-scroll-item {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 700ms ease,
+    transform 800ms cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+.section-content.in-view,
+.kinetic-reveal.visible,
+.reveal-item.active,
+.kinetic-scroll-item.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.heavy-zoom {
+  transition: transform 1200ms cubic-bezier(0.2, 0.9, 0.2, 1);
+  will-change: transform;
+}
+
+.heavy-zoom.in-view {
+  transform: scale(1.04);
+}
+
+.parallax-layer {
+  transform: translateY(0);
+  transition: transform 1000ms linear;
+  will-change: transform;
+}
+
+.parallax-layer.slow {
+  transition-duration: 1600ms;
+}
+
+.stagger-1 {
+  transition-delay: 100ms;
+}
+
+.stagger-2 {
+  transition-delay: 200ms;
+}
+
+.stagger-3 {
+  transition-delay: 300ms;
+}
+
+@keyframes floatUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes livePulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.45;
+    transform: scale(0.78);
+  }
+}
+
+.animate-float {
+  animation: floatUp 900ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+}
+
+/* ========================================
+   MOBILE HAMBURGER MENU ANIMATIONS
+   ======================================== */
+
+.hamburger-icon {
+  transition: all 600ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: inline-block;
+  font-size: 28px;
+}
+
+#mobile-menu-overlay {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 500ms ease, pointer-events 0ms linear 500ms;
+}
+
+#mobile-menu-overlay.hidden {
+  display: none;
+}
+
+#mobile-menu-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 100%;
+  max-width: 380px;
+  background: linear-gradient(135deg, rgba(253, 248, 248, 0.98) 0%, rgba(235, 231, 230, 0.95) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: -10px 0 80px rgba(0, 0, 0, 0.2);
+  overflow-y: auto;
+  will-change: transform;
+}
+
+/* Mobile nav links staggered animation */
+.mobile-nav-link {
+  position: relative;
+  display: block;
+  padding: 20px 24px;
+  margin: 8px 0;
+  font-size: 32px;
+  font-weight: 500;
+  color: #000000;
+  text-decoration: none;
+  border-radius: 12px;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateX(100px);
+  transition: all 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  letter-spacing: -0.01em;
+}
+
+.mobile-nav-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 163, 255, 0.1), transparent);
+  transition: left 600ms ease;
+}
+
+.mobile-nav-link:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+  transform: translateX(0) scale(1.02);
+  padding-left: 32px;
+}
+
+.mobile-nav-link:hover::before {
+  left: 100%;
+}
+
+/* Hover effect for mobile nav */
+.mobile-nav-link:active {
+  transform: translateX(0) scale(0.98);
+}
+
+/* Icon rotation animation */
+@keyframes iconRotate {
+  0% {
+    transform: rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: rotate(45deg) scale(0.5);
+    opacity: 0.5;
+  }
+  100% {
+    transform: rotate(90deg) scale(0);
+    opacity: 0;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px) translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) translateX(0);
+  }
+}
+
+@keyframes backdropFade {
+  from {
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+  }
+  to {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+}
+
+/* Menu panel slide animation */
+@keyframes menuSlideIn {
+  0% {
+    transform: translateX(100%);
+    box-shadow: -10px 0 80px rgba(0, 0, 0, 0);
+  }
+  100% {
+    transform: translateX(0);
+    box-shadow: -10px 0 80px rgba(0, 0, 0, 0.2);
+  }
+}
+
+@keyframes menuSlideOut {
+  0% {
+    transform: translateX(0);
+    box-shadow: -10px 0 80px rgba(0, 0, 0, 0.2);
+  }
+  100% {
+    transform: translateX(100%);
+    box-shadow: -10px 0 80px rgba(0, 0, 0, 0);
+  }
+}
+
+/* Overlay fade animation */
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Portal effect for menu items */
+@keyframes portalPulse {
+  0%, 100% {
+    text-shadow: 0 0 0 rgba(0, 163, 255, 0);
+  }
+  50% {
+    text-shadow: 0 0 10px rgba(0, 163, 255, 0.3);
+  }
+}
+
+/* Apply heavy animations on mobile */
+@media (max-width: 768px) {
+  #mobile-menu-overlay {
+    animation: overlayFadeIn 500ms ease forwards;
+  }
+
+  #mobile-menu-panel {
+    animation: menuSlideIn 700ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  .mobile-nav-link {
+    animation: slideUp 600ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  .mobile-nav-link:nth-child(1) {
+    animation-delay: 150ms;
+  }
+
+  .mobile-nav-link:nth-child(2) {
+    animation-delay: 210ms;
+  }
+
+  .mobile-nav-link:nth-child(3) {
+    animation-delay: 270ms;
+  }
+
+  .mobile-nav-link:nth-child(4) {
+    animation-delay: 330ms;
+  }
+
+  .mobile-nav-link:nth-child(5) {
+    animation-delay: 390ms;
+  }
+
+  .mobile-nav-link:nth-child(6) {
+    animation-delay: 450ms;
+  }
+
+  /* Heavy bounce effect on items */
+  .mobile-nav-link {
+    --tw-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .mobile-nav-link:hover {
+    --tw-shadow: 0 20px 40px rgba(0, 163, 255, 0.25);
+    box-shadow: var(--tw-shadow);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

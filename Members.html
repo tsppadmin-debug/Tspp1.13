@@ -1,0 +1,631 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>THE SOCIAL PHNOM PENH | Community is Culture</title>
+<link href="static/thesocial_logo.ico" rel="icon" type="image/x-icon">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-low": "#f7f3f2",
+                        "tertiary": "#000000",
+                        "on-surface-variant": "#444748",
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#efefff",
+                        "surface-tint": "#5f5e5e",
+                        "surface": "#fdf8f8",
+                        "secondary-container": "#2e5bff",
+                        "surface-container-high": "#ebe7e6",
+                        "inverse-surface": "#313030",
+                        "on-tertiary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-surface": "#1c1b1b",
+                        "outline-variant": "#c4c7c7",
+                        "on-secondary-fixed": "#001356",
+                        "inverse-primary": "#c8c6c5",
+                        "on-primary": "#ffffff",
+                        "surface-bright": "#fdf8f8",
+                        "secondary": "#00A3FF", // Polished light blue accent
+                        "background": "#fdf8f8",
+                        "primary-container": "#1c1b1b",
+                        "outline": "#747878",
+                        "on-error": "#ffffff",
+                        "inverse-on-surface": "#f4f0ef",
+                        "on-secondary": "#ffffff",
+                        "on-background": "#1c1b1b",
+                        "tertiary-fixed": "#e6e2df",
+                        "secondary-fixed": "#dde1ff",
+                        "on-tertiary-fixed-variant": "#484645",
+                        "primary": "#000000",
+                        "on-tertiary-container": "#868382",
+                        "tertiary-fixed-dim": "#cac6c4",
+                        "surface-dim": "#ddd9d8",
+                        "on-primary-fixed-variant": "#474746",
+                        "primary-fixed-dim": "#c8c6c5",
+                        "tertiary-container": "#1c1b1a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed": "#1c1b1a",
+                        "surface-container-highest": "#e5e2e1",
+                        "surface-container": "#f1edec",
+                        "on-error-container": "#93000a",
+                        "primary-fixed": "#e5e2e1",
+                        "on-primary-fixed": "#1c1b1b",
+                        "secondary-fixed-dim": "#b8c3ff",
+                        "on-secondary-fixed-variant": "#0035be",
+                        "surface-variant": "#e5e2e1",
+                        "on-primary-container": "#858383"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "16px", // Tightened grid
+                        "section-gap": "160px", // Generous whitespace
+                        "container-max": "1440px", // High-fidelity width
+                        "margin-desktop": "80px", // Increased margin for airiness
+                        "margin-mobile": "24px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Outfit"],
+                        "headline-lg-mobile": ["Outfit"],
+                        "caption": ["Outfit"],
+                        "headline-lg": ["Outfit"],
+                        "label-caps": ["Outfit"],
+                        "headline-md": ["Outfit"],
+                        "display-lg": ["Outfit"],
+                        "body-md": ["Outfit"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "1.7", "letterSpacing": "0.01em", "fontWeight": "300"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "500"}],
+                        "caption": ["13px", {"lineHeight": "1.5", "letterSpacing": "0.04em", "fontWeight": "400"}],
+                        "headline-lg": ["40px", {"lineHeight": "1.1", "letterSpacing": "-0.03em", "fontWeight": "500"}],
+                        "label-caps": ["11px", {"lineHeight": "1.0", "letterSpacing": "0.15em", "fontWeight": "600"}],
+                        "headline-md": ["28px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "400"}],
+                        "display-lg": ["72px", {"lineHeight": "0.95", "letterSpacing": "-0.05em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "letterSpacing": "0.01em", "fontWeight": "300"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #fdf8f8;
+            color: #1c1b1b;
+            -webkit-font-smoothing: antialiased;
+            font-family: 'Outfit', sans-serif;
+        }
+        .architectural-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 16px;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        /* Custom Tracking for Editorial Feel */
+        .tracking-editorial { letter-spacing: -0.04em; }
+        .tracking-label { letter-spacing: 0.25em; }
+            /* Scrolling / heavy animation additions */
+            html, body {
+                scroll-behavior: smooth;
+            }
+            body {
+                -webkit-overflow-scrolling: touch;
+            }
+            /* Snap sections to create a strong scrolling feel */
+            html { scroll-snap-type: y proximity; }
+            section { scroll-snap-align: start; scroll-snap-stop: always; }
+
+            /* Parallax background helper */
+            .parallax-bg { background-attachment: fixed; background-size: cover; background-position: center; will-change: transform; }
+
+            /* Entrance animation for section content (drama on scroll) */
+            .section-content { transform: translateY(40px) scale(0.98); opacity: 0; transition: transform 800ms cubic-bezier(.2,.9,.2,1), opacity 800ms ease; }
+            .section-content.in-view { transform: translateY(0) scale(1); opacity: 1; }
+
+            /* Extra motion for images and hero */
+            .heavy-zoom { transition: transform 1200ms cubic-bezier(.2,.9,.2,1); will-change: transform; }
+            .heavy-zoom.in-view { transform: scale(1.06); }
+
+            /* Subtle parallax layers inside sections */
+            .parallax-layer { transform: translateY(0); transition: transform 1000ms linear; }
+            .parallax-layer.slow { transition-duration: 1600ms; }
+
+            /* Keyframes for alternate animations */
+            @keyframes floatUp { from { transform: translateY(30px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+            .animate-float { animation: floatUp 900ms cubic-bezier(.2,.9,.2,1) both; }
+            .profile-card { transition: transform 300ms ease, box-shadow 300ms ease; }
+            .profile-card:hover { transform: translateY(-4px); box-shadow: 0 28px 80px rgba(0, 0, 0, 0.08); }
+            .profile-card .profile-img { min-height: 280px; background-position: center; background-size: cover; }
+            #member-detail-panel { display: none; }
+            #member-detail-panel.active { display: block; }
+            #member-detail-panel button { background: transparent; border: none; cursor: pointer; }
+            #member-detail-panel ul li::before { content: '•'; margin-right: 0.75rem; color: #00A3FF; }
+    </style>
+</head>
+<body class="font-body-md" id="main-body">
+    <!-- Mobile Navigation Overlay -->
+    <div
+      id="mobile-menu-overlay"
+      class="hidden fixed inset-0 z-40 bg-surface/10 backdrop-blur-md transition-all duration-500"
+    >
+      <div
+        id="mobile-menu-panel"
+        class="fixed top-0 right-0 h-screen w-full max-w-sm bg-surface/95 backdrop-blur-xl shadow-2xl transform translate-x-full transition-transform duration-700 ease-out overflow-y-auto"
+      >
+        <div class="p-8 pt-24 flex flex-col h-full">
+          <div class="flex-1 space-y-2">
+            <a
+              href="index.html"
+              class="mobile-nav-link block py-5 px-6 font-headline-md text-headline-md text-primary hover:bg-primary/5 transition-all duration-300 transform translate-x-full opacity-0"
+              data-index="0"
+              >Home</a
+            >
+            <a
+              href="About.html"
+              class="mobile-nav-link block py-5 px-6 font-headline-md text-headline-md text-primary hover:bg-primary/5 transition-all duration-300 transform translate-x-full opacity-0"
+              data-index="1"
+              >About</a
+            >
+            <a
+              href="Event.html"
+              class="mobile-nav-link block py-5 px-6 font-headline-md text-headline-md text-primary hover:bg-primary/5 transition-all duration-300 transform translate-x-full opacity-0"
+              data-index="2"
+              >Events</a
+            >
+            <a
+              href="Partners.html"
+              class="mobile-nav-link block py-5 px-6 font-headline-md text-headline-md text-primary hover:bg-primary/5 transition-all duration-300 transform translate-x-full opacity-0"
+              data-index="3"
+              >Partners</a
+            >
+            <a
+              href="Gallery.html"
+              class="mobile-nav-link block py-5 px-6 font-headline-md text-headline-md text-primary hover:bg-primary/5 transition-all duration-300 transform translate-x-full opacity-0"
+              data-index="4"
+              >Gallery</a
+            >
+            <a
+              href="Members.html"
+              class="mobile-nav-link block py-5 px-6 font-headline-md text-headline-md text-primary hover:bg-primary/5 transition-all duration-300 transform translate-x-full opacity-0"
+              data-index="5"
+              >Members</a
+            >
+            
+          </div>
+          <div class="border-t border-primary/10 pt-8 pb-8 opacity-0 transform translate-x-full transition-all duration-700" style="transition-delay: 400ms">
+            <p class="font-label-caps text-label-caps text-on-surface-variant tracking-label mb-4">CONNECT</p>
+            <div class="flex gap-4">
+              <a href="#" class="text-primary hover:text-secondary transition-colors">
+                <span class="material-symbols-outlined">public</span>
+              </a>
+              <a href="#" class="text-primary hover:text-secondary transition-colors">
+                <span class="material-symbols-outlined">mail</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TopNavBar -->
+    <nav
+      class="site-nav bg-surface/90 backdrop-blur-sm border-b border-outline-variant/30 top-0 z-50 fixed w-full"
+    >
+      <div
+        class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-base max-w-container-max mx-auto h-20"
+      >
+        <a
+          class="site-brand font-headline-md text-[20px] font-bold text-primary"
+          href="index.html"
+          >THE SOCIAL PHNOM PENH</a
+        >
+        <div class="hidden md:flex gap-10 items-center">
+          <a
+            class="nav-link font-label-caps text-label-caps cursor-pointer"
+            href="index.html"
+            >Home</a
+          >
+          <a
+            class="nav-link font-label-caps text-label-caps cursor-pointer"
+            href="About.html"
+            >About</a
+          >
+          <a
+            class="nav-link font-label-caps text-label-caps cursor-pointer"
+            href="Event.html"
+            >Events</a
+          >
+          <a
+            class="nav-link font-label-caps text-label-caps cursor-pointer"
+            href="Partners.html"
+            >Partners</a
+          >
+          <a
+            class="nav-link font-label-caps text-label-caps cursor-pointer"
+            href="Gallery.html"
+            >Gallery</a
+          >
+          <a
+            class="nav-link font-label-caps text-label-caps cursor-pointer is-active"
+            href="Members.html"
+            >Members</a
+          >
+          
+        </div>
+        <button
+          id="mobile-menu-btn"
+          class="md:hidden text-primary z-40 relative hamburger"
+          aria-label="Open navigation menu"
+        >
+          <span class="material-symbols-outlined hamburger-icon">menu</span>
+        </button>
+      </div>
+    </nav>
+<main class="relative pt-2xl">
+<!-- Background Parallax Elements -->
+<div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+<div class="parallax-layer absolute top-[10%] left-[5%] w-96 h-96 bg-secondary-fixed/10 rounded-full blur-3xl" data-speed="0.05"></div>
+<div class="parallax-layer absolute bottom-[20%] right-[5%] w-[32rem] h-[32rem] bg-tertiary-fixed/5 rounded-full blur-[100px]" data-speed="0.1"></div>
+<div class="parallax-layer absolute top-[40%] left-[50%] w-64 h-64 border border-outline/5 rotate-45" data-speed="0.15"></div>
+</div>
+<div style="margin: 20px; padding: 20px;">
+</div>
+<!-- Hero Section -->
+<section class="relative z-10 px-lg md:px-2xl pt-2xl pb-xl text-center">
+<div class="max-w-4xl mx-auto">
+<span class="inline-block font-label-sm text-label-sm uppercase tracking-[0.3em] text-secondary mb-md reveal-item active">Our Collective</span>
+<h1 class="font-headline-lg text-[64px] leading-none mb-lg reveal-item active" style="transition-delay: 100ms;">Architects of Culture</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto reveal-item active" style="transition-delay: 200ms;">
+                    A precision-engineered team of visionaries redefining the social landscape of Phnom Penh through curation, design, and digital precision.
+                </p>
+</div>
+</section>
+<!-- Team Grid -->
+ 
+<section class="relative z-10 px-lg md:px-2xl pb-2xl">
+<div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="team-grid">
+<!-- Member 1 -->
+<div class="reveal-item profile-card group cursor-pointer rounded-[28px] border border-outline/10 bg-surface/95 p-5" style="transition-delay: 100ms;" data-member-name="Ing Anovita" data-member-role="Co-Founder and Head of Strategy" data-member-bio="Architect of our strategy, blending Phnom Penh culture with bold brand moments. Builds narratives from community insight." data-member-notes="Strategy|Curation|Brand Vision">
+<div class="relative overflow-hidden aspect-[3/4] bg-surface-container mb-md border border-outline/10">
+<div class="profile-img w-full h-full bg-surface-container-highest flex items-center justify-center"><span class="font-label-sm text-label-sm text-on-surface-variant opacity-50 tracking-widest">UPLOAD PORTRAIT</span></div>
+<div class="absolute inset-0 bg-secondary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+</div>
+<div class="flex justify-between items-end border-b-2 border-outline/10 pb-sm group-hover:border-secondary transition-colors duration-500">
+<div>
+<h3 class="font-headline-md text-[24px] mb-xs">Ing Anovita</h3>
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-secondary">Co-Founder and Head of Strategy</span>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-secondary transition-colors">north_east</span>
+</div>
+</div>
+<!-- Member 2 -->
+<div class="reveal-item profile-card group cursor-pointer rounded-[28px] border border-outline/10 bg-surface/95 p-5" style="transition-delay: 200ms;" data-member-name="Nikko Chy" data-member-role="Co-Founder and Head of Community" data-member-bio="Community architect who nurtures every connection, from intimate meetups to immersive social experiences. Creates safe spaces for creative exchange." data-member-notes="Community|Events|Networks">
+<div class="relative overflow-hidden aspect-[3/4] bg-surface-container mb-md border border-outline/10">
+<div class="profile-img w-full h-full bg-surface-container-highest flex items-center justify-center"><span class="font-label-sm text-label-sm text-on-surface-variant opacity-50 tracking-widest">UPLOAD PORTRAIT</span></div>
+<div class="absolute inset-0 bg-secondary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+</div>
+<div class="flex justify-between items-end border-b-2 border-outline/10 pb-sm group-hover:border-secondary transition-colors duration-500">
+<div>
+<h3 class="font-headline-md text-[24px] mb-xs">Nikko Chy</h3>
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-secondary">Co-Founder and Head of Community</span>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-secondary transition-colors">north_east</span>
+</div>
+</div>
+<!-- Member 3 -->
+<div class="reveal-item profile-card group cursor-pointer rounded-[28px] border border-outline/10 bg-surface/95 p-5" style="transition-delay: 300ms;" data-member-name="Isarak Tep Chan" data-member-role="Videography and Technical Lead" data-member-bio="Visual storyteller and technical director capturing the pulse of the movement through film, editorial photography, and live production." data-member-notes="Video|Production|Storytelling">
+<div class="relative overflow-hidden aspect-[3/4] bg-surface-container mb-md border border-outline/10">
+<div class="profile-img w-full h-full bg-surface-container-highest flex items-center justify-center"><span class="font-label-sm text-label-sm text-on-surface-variant opacity-50 tracking-widest">UPLOAD PORTRAIT</span></div>
+<div class="absolute inset-0 bg-secondary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+</div>
+<div class="flex justify-between items-end border-b-2 border-outline/10 pb-sm group-hover:border-secondary transition-colors duration-500">
+<div>
+<h3 class="font-headline-md text-[24px] mb-xs">Isarak Tep Chan</h3>
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-secondary">Videography and Technial Lead</span>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-secondary transition-colors">north_east</span>
+</div>
+</div>
+<!-- Member 4 -->
+<div class="reveal-item profile-card group cursor-pointer rounded-[28px] border border-outline/10 bg-surface/95 p-5" style="transition-delay: 400ms;" data-member-name="SeavPhing Lao" data-member-role="Community and External Relations Leads" data-member-bio="Connector of collaborators and partners, amplifying network impact across culture, venue, and media spheres." data-member-notes="Partnerships|Relations|Outreach">
+<div class="relative overflow-hidden aspect-[3/4] bg-surface-container mb-md border border-outline/10">
+<div class="profile-img w-full h-full bg-surface-container-highest flex items-center justify-center"><span class="font-label-sm text-label-sm text-on-surface-variant opacity-50 tracking-widest">UPLOAD PORTRAIT</span></div>
+<div class="absolute inset-0 bg-secondary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+</div>
+<div class="flex justify-between items-end border-b-2 border-outline/10 pb-sm group-hover:border-secondary transition-colors duration-500">
+<div>
+<h3 class="font-headline-md text-[24px] mb-xs">SeavPhing Lao</h3>
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-secondary">Community and External Relations Leads</span>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-secondary transition-colors">north_east</span>
+</div>
+</div>
+<!-- Member 5 -->
+<div class="reveal-item profile-card group cursor-pointer rounded-[28px] border border-outline/10 bg-surface/95 p-5" style="transition-delay: 500ms;" data-member-name="Tep BoreyRothna" data-member-role="Finance and Sales lead" data-member-bio="Keeps the engine running with precision budgeting, revenue strategy, and sustainable partnerships for creative growth." data-member-notes="Finance|Sales|Growth">
+<div class="relative overflow-hidden aspect-[3/4] bg-surface-container mb-md border border-outline/10">
+<div class="profile-img w-full h-full bg-surface-container-highest flex items-center justify-center"><span class="font-label-sm text-label-sm text-on-surface-variant opacity-50 tracking-widest">UPLOAD PORTRAIT</span></div>
+<div class="absolute inset-0 bg-secondary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+</div>
+<div class="flex justify-between items-end border-b-2 border-outline/10 pb-sm group-hover:border-secondary transition-colors duration-500">
+<div>
+<h3 class="font-headline-md text-[24px] mb-xs">Tep BoreyRothna</h3>
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-secondary">Finance and Sales lead</span>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-secondary transition-colors">north_east</span>
+</div>
+</div>
+<!-- Member 6 -->
+<div class="reveal-item profile-card group cursor-pointer rounded-[28px] border border-outline/10 bg-surface/95 p-5" style="transition-delay: 600ms;" data-member-name="Yannick Rithy" data-member-role="Business Development lead" data-member-bio="Scales the collective with strategic business partnerships and growth planning across The Social ecosystem." data-member-notes="Business|Development|Strategy">
+<div class="relative overflow-hidden aspect-[3/4] bg-surface-container mb-md border border-outline/10">
+<div class="profile-img w-full h-full bg-surface-container-highest flex items-center justify-center"><span class="font-label-sm text-label-sm text-on-surface-variant opacity-50 tracking-widest">UPLOAD PORTRAIT</span></div>
+<div class="absolute inset-0 bg-secondary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+</div>
+<div class="flex justify-between items-end border-b-2 border-outline/10 pb-sm group-hover:border-secondary transition-colors duration-500">
+<div>
+<h3 class="font-headline-md text-[24px] mb-xs">Yannick Rithy</h3>
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-secondary">Business Development lead</span>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-secondary transition-colors">north_east</span>
+</div>
+</div>
+</div>
+</section>
+<div id="member-detail-panel" class="hidden relative z-20 px-lg md:px-2xl pb-2xl">
+  <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[minmax(320px,380px)_1fr] gap-8 p-8 bg-surface/95 border border-outline/10 shadow-2xl rounded-[32px]">
+    <div class="space-y-8">
+      <div class="flex justify-between items-center gap-4">
+        <div>
+          <p class="font-label-caps text-label-caps uppercase tracking-[0.35em] text-secondary" id="detail-role">Role</p>
+          <h2 class="font-headline-md text-[36px] text-primary" id="detail-name">Member Name</h2>
+        </div>
+        <button id="member-detail-close" class="font-label-caps text-label-caps uppercase tracking-[0.35em] text-on-surface-variant hover:text-secondary">Close</button>
+      </div>
+      <div class="rounded-[28px] overflow-hidden border border-outline/10 bg-surface-container-highest h-[420px] flex items-center justify-center text-on-surface-variant text-label-sm">PROFILE IMAGE</div>
+      <div class="space-y-4">
+        <p class="font-body-md text-body-md text-on-surface-variant" id="detail-bio">Select a member to see their full profile and story.</p>
+      </div>
+    </div>
+    <div class="flex flex-col justify-between">
+      <div class="space-y-6">
+        <div class="rounded-[28px] border border-outline/10 bg-surface-container-highest p-8 h-full">
+          <p class="font-label-caps text-label-caps uppercase tracking-[0.35em] text-secondary mb-4">About</p>
+          <p class="font-body-md text-body-md text-on-surface-variant" id="detail-description">A deeper look at the member’s role, strengths, and what they bring to the collective.</p>
+        </div>
+      </div>
+      <div class="rounded-[28px] border border-outline/10 bg-surface-container-lowest p-8">
+        <p class="font-label-caps text-label-caps uppercase tracking-[0.35em] text-secondary mb-4">Focus Areas</p>
+        <ul class="space-y-3 text-body-md text-on-surface-variant" id="detail-notes"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+</main>
+<!-- Footer -->
+    <footer class="bg-surface border-t border-outline-variant/30 py-32">
+      <div
+        class="flex flex-col md:flex-row justify-between items-start w-full px-margin-desktop max-w-container-max mx-auto gap-20"
+      >
+        <div class="md:w-1/3">
+          <div
+            class="font-headline-md text-[24px] font-bold mb-8 tracking-editorial"
+          >
+            THE SOCIAL PHNOM PENH
+          </div>
+          <p class="font-body-md text-on-surface-variant leading-relaxed">
+            A sanctuary for creative exchange and intentional community in the
+            heart of Cambodia.
+          </p>
+        </div>
+        <div class="grid grid-cols-2 gap-24">
+          <div class="flex flex-col gap-6">
+            <span
+              class="font-label-caps text-label-caps text-secondary tracking-label mb-2"
+              >SOCIAL</span
+            >
+            <a
+              class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors tracking-widest"
+              href="https://www.instagram.com/thesocialphnompenh"
+              >INSTAGRAM</a
+            >
+            <a
+              class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors tracking-widest"
+              href="https://t.me/+ourAIz2lPShlYWM1"
+              >Telegram</a
+            >
+            <a
+              class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors tracking-widest"
+              href="https://www.linkedin.com/company/the-social-phnom-penh/"
+              >LINKEDIN</a
+            >
+          </div>
+          <div class="flex flex-col gap-6">
+            <a
+              class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors tracking-widest"
+              href="thesocialphnompenh@gmail.com"
+              >Email</a
+            >
+            <a
+              class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors tracking-widest"
+              href="comingsoon.html"
+              >MEMBERSHIP</a
+            >
+            <a
+              class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors tracking-widest"
+              href="https://linktr.ee/thesocialphnompenh?utm_source=ig&utm_medium=social&utm_content=link_in_bio"
+              >PARTNERSHIPS</a
+            >
+          </div>
+        </div>
+      </div>
+      <div
+        class="max-w-container-max mx-auto px-margin-desktop mt-32 pt-12 border-t border-outline-variant/10 flex flex-col md:flex-row justify-between items-center text-on-surface-variant opacity-50"
+      >
+        <p class="font-label-caps text-[10px] tracking-widest">
+          © 2026 THE SOCIAL PHNOM PENH. ALL RIGHTS RESERVED.
+        </p>
+        <div class="flex gap-8 mt-4 md:mt-0">
+          <a href="privacy%20policy.html" class="font-label-caps text-[10px] tracking-widest hover:text-primary transition-colors">
+            PRIVACY POLICY
+          </a>
+          <p class="font-label-caps text-[10px] tracking-widest">
+            TERMS OF SERVICE
+          </p>
+        </div>
+      </div>
+    </footer>
+<script>
+        // Kinetic Continuity Reveal
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal-item').forEach((item) => {
+            observer.observe(item);
+        });
+
+        // Parallax Effect
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            document.querySelectorAll('.parallax-layer').forEach((layer) => {
+                const speed = layer.getAttribute('data-speed');
+                const yPos = -(scrolled * speed);
+                layer.style.transform = `translateY(${yPos}px)`;
+            });
+        });
+
+        // Micro-interactions for team cards
+        document.querySelectorAll('.profile-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                // Future: add subtle audio or custom cursor logic
+            });
+        });
+
+        const detailPanel = document.getElementById('member-detail-panel');
+        const detailName = document.getElementById('detail-name');
+        const detailRole = document.getElementById('detail-role');
+        const detailBio = document.getElementById('detail-bio');
+        const detailDescription = document.getElementById('detail-description');
+        const detailNotes = document.getElementById('detail-notes');
+        const detailClose = document.getElementById('member-detail-close');
+
+        function openDetailPanel(card) {
+            if (!card) return;
+            const name = card.dataset.memberName || 'Unknown Member';
+            const role = card.dataset.memberRole || 'Team Member';
+            const bio = card.dataset.memberBio || 'A creative catalyst within the collective.';
+            const notes = card.dataset.memberNotes ? card.dataset.memberNotes.split('|') : [];
+
+            detailName.textContent = name;
+            detailRole.textContent = role;
+            detailBio.textContent = bio;
+            detailDescription.textContent = `${name} is a core member of the collective. ${bio}`;
+            detailNotes.innerHTML = notes.map(note => `<li>${note}</li>`).join('');
+            detailPanel.classList.add('active');
+            window.scrollTo({ top: detailPanel.offsetTop - 40, behavior: 'smooth' });
+        }
+
+        function closeDetailPanel() {
+            detailPanel.classList.remove('active');
+        }
+
+        document.querySelectorAll('.profile-card').forEach(card => {
+            card.addEventListener('click', () => openDetailPanel(card));
+        });
+
+        detailClose.addEventListener('click', closeDetailPanel);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeDetailPanel();
+        });
+    </script>
+    <script>
+      // Mobile Menu Toggle
+      (function () {
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+        const mobileMenuPanel = document.getElementById('mobile-menu-panel');
+        const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+        const hamburgerIcon = document.querySelector('.hamburger-icon');
+        let isOpen = false;
+        mobileMenuBtn.setAttribute('aria-expanded', 'false');
+
+        function openMenu() {
+          isOpen = true;
+          mobileMenuOverlay.classList.remove('hidden');
+          void mobileMenuPanel.offsetWidth;
+          mobileMenuPanel.style.transform = 'translateX(0)';
+          mobileMenuOverlay.style.opacity = '1';
+          mobileMenuOverlay.style.pointerEvents = 'auto';
+          hamburgerIcon.textContent = 'close';
+          hamburgerIcon.style.transform = 'rotate(0deg) scale(1)';
+          mobileMenuBtn.setAttribute('aria-label', 'Close navigation menu');
+          mobileMenuBtn.setAttribute('aria-expanded', 'true');
+          mobileNavLinks.forEach((link) => {
+            const index = parseInt(link.getAttribute('data-index'));
+            setTimeout(() => {
+              link.style.opacity = '1';
+              link.style.transform = 'translateX(0)';
+            }, 80 + index * 60);
+          });
+          document.body.style.overflow = 'hidden';
+        }
+
+        function closeMenu() {
+          isOpen = false;
+          mobileMenuPanel.style.transform = 'translateX(100%)';
+          mobileMenuOverlay.style.opacity = '0';
+          mobileMenuOverlay.style.pointerEvents = 'none';
+          hamburgerIcon.textContent = 'menu';
+          hamburgerIcon.style.transform = 'rotate(0deg) scale(1)';
+          mobileMenuBtn.setAttribute('aria-label', 'Open navigation menu');
+          mobileMenuBtn.setAttribute('aria-expanded', 'false');
+          mobileNavLinks.forEach((link) => {
+            link.style.opacity = '0';
+            link.style.transform = 'translateX(100px)';
+          });
+          setTimeout(() => {
+            if (!isOpen) mobileMenuOverlay.classList.add('hidden');
+          }, 500);
+          document.body.style.overflow = '';
+        }
+
+        mobileMenuBtn.addEventListener('click', () => {
+          isOpen ? closeMenu() : openMenu();
+        });
+
+        mobileMenuOverlay.addEventListener('click', (e) => {
+          if (e.target === mobileMenuOverlay) closeMenu();
+        });
+
+        mobileNavLinks.forEach((link) => {
+          link.addEventListener('click', () => closeMenu());
+        });
+
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && isOpen) closeMenu();
+        });
+      })();
+    </script>
+</body></html>

@@ -1,0 +1,793 @@
+<!doctype html>
+<html class="light" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>THE SOCIAL PHNOM PENH | Community is Culture</title>
+    <link href="static/thesocial_logo.ico" rel="icon" type="image/x-icon" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container-low": "#f7f3f2",
+              tertiary: "#000000",
+              "on-surface-variant": "#444748",
+              error: "#ba1a1a",
+              "on-secondary-container": "#efefff",
+              "surface-tint": "#5f5e5e",
+              surface: "#fdf8f8",
+              "secondary-container": "#2e5bff",
+              "surface-container-high": "#ebe7e6",
+              "inverse-surface": "#313030",
+              "on-tertiary": "#ffffff",
+              "error-container": "#ffdad6",
+              "on-surface": "#1c1b1b",
+              "outline-variant": "#c4c7c7",
+              "on-secondary-fixed": "#001356",
+              "inverse-primary": "#c8c6c5",
+              "on-primary": "#ffffff",
+              "surface-bright": "#fdf8f8",
+              secondary: "#00A3FF", // Polished light blue accent
+              background: "#fdf8f8",
+              "primary-container": "#1c1b1b",
+              outline: "#747878",
+              "on-error": "#ffffff",
+              "inverse-on-surface": "#f4f0ef",
+              "on-secondary": "#ffffff",
+              "on-background": "#1c1b1b",
+              "tertiary-fixed": "#e6e2df",
+              "secondary-fixed": "#dde1ff",
+              "on-tertiary-fixed-variant": "#484645",
+              primary: "#000000",
+              "on-tertiary-container": "#868382",
+              "tertiary-fixed-dim": "#cac6c4",
+              "surface-dim": "#ddd9d8",
+              "on-primary-fixed-variant": "#474746",
+              "primary-fixed-dim": "#c8c6c5",
+              "tertiary-container": "#1c1b1a",
+              "surface-container-lowest": "#ffffff",
+              "on-tertiary-fixed": "#1c1b1a",
+              "surface-container-highest": "#e5e2e1",
+              "surface-container": "#f1edec",
+              "on-error-container": "#93000a",
+              "primary-fixed": "#e5e2e1",
+              "on-primary-fixed": "#1c1b1b",
+              "secondary-fixed-dim": "#b8c3ff",
+              "on-secondary-fixed-variant": "#0035be",
+              "surface-variant": "#e5e2e1",
+              "on-primary-container": "#858383",
+            },
+            borderRadius: {
+              DEFAULT: "0.125rem",
+              lg: "0.25rem",
+              xl: "0.5rem",
+              full: "0.75rem",
+            },
+            spacing: {
+              gutter: "16px", // Tightened grid
+              "section-gap": "160px", // Generous whitespace
+              "container-max": "1440px", // High-fidelity width
+              "margin-desktop": "80px", // Increased margin for airiness
+              "margin-mobile": "24px",
+              base: "8px",
+            },
+            fontFamily: {
+              "body-lg": ["Outfit"],
+              "headline-lg-mobile": ["Outfit"],
+              caption: ["Outfit"],
+              "headline-lg": ["Outfit"],
+              "label-caps": ["Outfit"],
+              "headline-md": ["Outfit"],
+              "display-lg": ["Outfit"],
+              "body-md": ["Outfit"],
+            },
+            fontSize: {
+              "body-lg": [
+                "18px",
+                {
+                  lineHeight: "1.7",
+                  letterSpacing: "0.01em",
+                  fontWeight: "300",
+                },
+              ],
+              "headline-lg-mobile": [
+                "28px",
+                {
+                  lineHeight: "1.2",
+                  letterSpacing: "-0.02em",
+                  fontWeight: "500",
+                },
+              ],
+              caption: [
+                "13px",
+                {
+                  lineHeight: "1.5",
+                  letterSpacing: "0.04em",
+                  fontWeight: "400",
+                },
+              ],
+              "headline-lg": [
+                "40px",
+                {
+                  lineHeight: "1.1",
+                  letterSpacing: "-0.03em",
+                  fontWeight: "500",
+                },
+              ],
+              "label-caps": [
+                "11px",
+                {
+                  lineHeight: "1.0",
+                  letterSpacing: "0.15em",
+                  fontWeight: "600",
+                },
+              ],
+              "headline-md": [
+                "28px",
+                {
+                  lineHeight: "1.2",
+                  letterSpacing: "-0.01em",
+                  fontWeight: "400",
+                },
+              ],
+              "display-lg": [
+                "72px",
+                {
+                  lineHeight: "0.95",
+                  letterSpacing: "-0.05em",
+                  fontWeight: "600",
+                },
+              ],
+              "body-md": [
+                "16px",
+                {
+                  lineHeight: "1.6",
+                  letterSpacing: "0.01em",
+                  fontWeight: "300",
+                },
+              ],
+            },
+          },
+        },
+      };
+    </script>
+    <link href="styles.css" rel="stylesheet" />
+    <link href="animations.css" rel="stylesheet" />
+  </head>
+  <body class="font-body-md" id="main-body">
+    <!-- Mobile Navigation Overlay -->
+    <div
+      id="mobile-menu-overlay"
+      class="hidden fixed inset-0 z-40 bg-surface/10 backdrop-blur-md transition-all duration-500"
+    >
+      <div
+        id="mobile-menu-panel"
+        class="fixed top-0 right-0 h-screen w-full max-w-sm bg-surface/95 backdrop-blur-xl shadow-2xl transform translate-x-full transition-transform duration-700 ease-out overflow-y-auto"
+      >
+        <div class="p-8 pt-24 flex flex-col h-full">
+          <div class="flex-1 space-y-2">
+            <a
+              href="index.html"
+              class="mobile-nav-link block py-5 px-6 font-headline-md text-headline-md text-primary hover:bg-primary/5 transition-all duration-300 transform translate-x-full opacity-0"
+              data-index="0"
+              >Home</a
+            >
+            <a
+              href="About.html"
+              class="mobile-nav-link block py-5 px-6 font-headline-md text-headline-md text-primary hover:bg-primary/5 transition-all duration-300 transform translate-x-full opacity-0"
+              data-index="1"
+              >About</a
+            >
+            <a
+              href="Event.html"
+              class="mobile-nav-link block py-5 px-6 font-headline-md text-headline-md text-primary hover:bg-primary/5 transition-all duration-300 transform translate-x-full opacity-0"
+              data-index="2"
+              >Events</a
+            >
+            <a
+              href="Partners.html"
+              class="mobile-nav-link block py-5 px-6 font-headline-md text-headline-md text-primary hover:bg-primary/5 transition-all duration-300 transform translate-x-full opacity-0"
+              data-index="3"
+              >Partners</a
+            >
+            <a
+              href="Gallery.html"
+              class="mobile-nav-link block py-5 px-6 font-headline-md text-headline-md text-primary hover:bg-primary/5 transition-all duration-300 transform translate-x-full opacity-0"
+              data-index="4"
+              >Gallery</a
+            >
+            <a
+              href="comingsoon.html"
+              class="mobile-nav-link block py-5 px-6 font-headline-md text-headline-md text-primary hover:bg-primary/5 transition-all duration-300 transform translate-x-full opacity-0"
+              data-index="5"
+              >Coming Soon</a
+            >
+          </div>
+          <div class="border-t border-primary/10 pt-8 pb-8 opacity-0 transform translate-x-full transition-all duration-700" style="transition-delay: 400ms">
+            <p class="font-label-caps text-label-caps text-on-surface-variant tracking-label mb-4">CONNECT</p>
+            <div class="flex gap-4">
+              <a href="#" class="text-primary hover:text-secondary transition-colors">
+                <span class="material-symbols-outlined">public</span>
+              </a>
+              <a href="#" class="text-primary hover:text-secondary transition-colors">
+                <span class="material-symbols-outlined">mail</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TopNavBar -->
+    <nav
+      class="site-nav bg-surface/90 backdrop-blur-sm border-b border-outline-variant/30 top-0 z-50 fixed w-full"
+    >
+      <div
+        class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-base max-w-container-max mx-auto h-20"
+      >
+        <a
+          class="site-brand font-headline-md text-[20px] font-bold text-primary"
+          href="index.html"
+          >THE SOCIAL PHNOM PENH</a
+        >
+        <div class="hidden md:flex gap-10 items-center">
+          <a
+            class="nav-link font-label-caps text-label-caps cursor-pointer is-active"
+            href="index.html"
+            >Home</a
+          >
+          <a
+            class="nav-link font-label-caps text-label-caps cursor-pointer"
+            href="About.html"
+            >About</a
+          >
+          <a
+            class="nav-link font-label-caps text-label-caps cursor-pointer"
+            href="Event.html"
+            >Events</a
+          >
+          <a
+            class="nav-link font-label-caps text-label-caps cursor-pointer"
+            href="Partners.html"
+            >Partners</a
+          >
+          <a
+            class="nav-link font-label-caps text-label-caps cursor-pointer"
+            href="Gallery.html"
+            >Gallery</a
+          >
+          <a
+            class="nav-link font-label-caps text-label-caps cursor-pointer"
+            href="comingsoon.html"
+            >Coming Soon</a
+          >
+        </div>
+        <button
+          id="mobile-menu-btn"
+          class="md:hidden text-primary z-40 relative hamburger"
+          aria-label="Open navigation menu"
+        >
+          <span class="material-symbols-outlined hamburger-icon">menu</span>
+        </button>
+      </div>
+    </nav>
+    <!-- Hero Section -->
+    <section
+      class="relative pt-20 h-screen flex flex-col justify-end bg-surface overflow-hidden"
+    >
+      <div class="absolute inset-0 z-0">
+        <video
+          class="w-full h-full object-cover transition-transform duration-1000 parallax-bg heavy-zoom"
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="auto"
+          disablepictureinpicture
+          controlslist="nodownload noplaybackrate noremoteplayback"
+        >
+          <source
+            src="https://res.cloudinary.com/dfefliptm/video/upload/f_mp4,q_auto/v1782572693/0616_2_jvgtdy.mp4"
+            type="video/mp4"
+          />
+          <source
+            src="https://res.cloudinary.com/dfefliptm/video/upload/v1782572693/0616_2_jvgtdy.mov"
+            type="video/quicktime"
+          />
+        </video>
+        <div
+          class="absolute inset-0 bg-gradient-to-t from-surface via-surface/10 to-transparent opacity-80"
+        ></div>
+      </div>
+      <div
+        class="relative z-10 px-margin-desktop max-w-container-max mx-auto w-full pb-32 section-content"
+      >
+        <div class="md:w-4/5">
+          <div class="flex items-center gap-3 mb-6">
+            <span class="w-8 h-[1px] bg-secondary"></span>
+            <span
+              class="font-label-caps text-label-caps tracking-label text-secondary"
+              >EST. 2026 — CAMBODIA</span
+            >
+          </div>
+          <h1
+            class="font-display-lg text-display-lg md:text-[96px] text-primary mb-12 max-w-5xl tracking-editorial"
+          >
+            COMMUNITY IS THE FUTURE OF CULTURE
+          </h1>
+          <div class="flex gap-4">
+            <a
+              href="https://www.instagram.com/thesocialphnompenh/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="bg-primary text-on-primary px-12 py-5 font-label-caps text-label-caps tracking-widest hover:bg-secondary transition-all duration-500 uppercase"
+            >
+              DISCOVER THE MOVEMENT
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Manifesto Section -->
+    <section class="py-section-gap bg-surface">
+      <div
+        class="max-w-container-max mx-auto px-margin-desktop section-content"
+      >
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-gutter items-start">
+          <div class="md:col-span-5 pt-12">
+            <h2
+              class="font-headline-lg text-headline-lg mb-12 leading-[1.1] tracking-tight"
+            >
+              WE DON'T JUST HOST EVENTS. WE CURATE CONNECTIONS.
+            </h2>
+            <p
+              class="font-body-lg text-body-lg text-on-surface-variant mb-10 leading-relaxed"
+            >
+              In the heart of Phnom Penh's rapidly evolving landscape, we stand
+              as a sanctuary for the curious, the creative, and the bold.
+              Culture isn't consumed; it's co-created through conversations over
+  
+            </p>
+            <div class="flex items-start gap-6 border-l border-primary/20 pl-8">
+              <p
+                class="font-body-md text-body-md text-on-surface-variant italic leading-loose"
+              >
+                A collective dedicated to documenting the urban pulse of
+                Cambodia through candid interaction and cinematic social
+                discovery.
+              </p>
+            </div>
+          </div>
+          <div class="md:col-span-6 md:col-start-7 relative">
+            <div class="aspect-[4/5] bg-surface-container-low overflow-hidden">
+              <img
+                class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000"
+                data-alt="A curated social gathering in a modern industrial space in Phnom Penh. Long dinner table, warm ambient lighting, creative people talking, documentary style, cinematic, premium but human. High-end editorial photography with sharp focus and professional lighting."
+                src="https://res.cloudinary.com/dfefliptm/image/upload/v1782616957/Thegirls_eooyet.jpg"
+              />
+            </div>
+            <div
+              class="absolute -bottom-12 -left-12 hidden lg:flex w-56 h-56 bg-primary p-10 items-center justify-center"
+            >
+              <p
+                class="text-on-primary font-label-caps text-center leading-[1.6] tracking-label"
+              >
+                AUTHENTICITY ABOVE ALL ELSE.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Experience Formats -->
+    <section class="py-section-gap bg-surface">
+      <div
+        class="max-w-container-max mx-auto px-margin-desktop section-content"
+      >
+        <div
+          class="flex flex-col md:flex-row justify-between items-end mb-20 border-b border-outline-variant/30 pb-12"
+        >
+          <div>
+            <span
+              class="font-label-caps text-label-caps text-secondary mb-4 block tracking-label"
+              >01 / THE PULSE</span
+            >
+            <h2 class="font-display-lg text-[56px] tracking-editorial">
+              EXPERIENCE FORMATS
+            </h2>
+          </div>
+          <button
+            class="font-label-caps text-label-caps text-on-surface-variant hover:text-secondary transition-colors pb-1 flex items-center gap-2 group"
+          >
+            
+          </button>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-20">
+          <!-- THE SOCIAL SATURDAY -->
+          <a href="Gallery.html" class="group cursor-pointer block">
+            <div class="overflow-hidden mb-8 aspect-[1.2/1]">
+              <img
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
+                data-alt="The Social Night brings together community dinners, workshops, music-led gatherings, and creative social experiences that turn after work/school into meaningful connection. More than just events, it creates a recurring social rhythm where people build familiarity, friendships, and community over time. "
+                src="https://res.cloudinary.com/dfefliptm/image/upload/v1782616954/theoscialnight_fdb7eu.jpg"
+              />
+            </div>
+            <div class="flex justify-between items-start">
+              <div>
+                <h3
+                  class="font-headline-md text-headline-md mb-4 tracking-tight"
+                >
+                  THE SOCIAL NIGHT
+                </h3>
+                <p
+                  class="font-body-md text-body-md text-on-surface-variant max-w-sm leading-relaxed"
+                >
+                  Curated after-hours social series designed for young people to unwind, connect, and experience culture in a more intentional way. 
+                </p>
+              </div>
+              <span
+                class="material-symbols-outlined text-secondary opacity-0 group-hover:opacity-100 transition-all text-3xl"
+                >north_east</span
+              >
+            </div>
+          </a>
+          <!-- THE SOCIAL SATURDAY -->
+          <a href="Gallery.html" class="group cursor-pointer block">
+            <div class="overflow-hidden mb-8 aspect-[1.2/1]">
+              <img
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
+                data-alt="Cinematic documentary-style photography of Phnom Penh nightlife. A group of stylish young Cambodians at an underground music event, candid interaction, flash photography aesthetic, motion blur, moody lighting, urban Cambodia energy, high contrast, film grain. Professional high-key minimalist finish."
+                src="https://res.cloudinary.com/dfefliptm/image/upload/v1782616959/sideshot_zgk7b8.jpg"
+              />
+            </div>
+            <div class="flex justify-between items-start">
+              <div>
+                <h3
+                  class="font-headline-md text-headline-md mb-4 tracking-tight"
+                >
+                  THE SOCIAL SATURDAY
+                </h3>
+                <p
+                  class="font-body-md text-body-md text-on-surface-variant max-w-sm leading-relaxed"
+                >
+                  A curated weekend community experience centered around movement, wellness, exploration, and meaningful social connection. 
+
+                </p>
+              </div>
+              <span
+                class="material-symbols-outlined text-secondary opacity-0 group-hover:opacity-100 transition-all text-3xl"
+                >north_east</span
+              >
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+    <!-- Community Feed Preview (Bento Grid) -->
+    <section class="py-section-gap bg-surface-container-low/50">
+      <div
+        class="max-w-container-max mx-auto px-margin-desktop section-content"
+      >
+        <div class="text-center mb-24">
+          <span
+            class="font-label-caps text-label-caps tracking-label text-on-surface-variant mb-4 block"
+            >THE ARCHIVE</span
+          >
+          <h2 class="font-headline-lg text-headline-lg tracking-tight">
+            DOCUMENTING THE COLLECTIVE
+          </h2>
+        </div>
+        <div class="grid grid-cols-4 grid-rows-2 gap-4 h-[700px]">
+          <div class="col-span-2 row-span-2 relative overflow-hidden group">
+            <img
+              class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+              data-alt="Modern communal dining scene in Phnom Penh, high-key lighting, minimalist interior, people interacting naturally, documentary style, soft shadows, pristine white and neutral palette."
+              src="https://res.cloudinary.com/dfefliptm/image/upload/v1782616955/sabaybowlingnight_wsdsmb.jpg"
+            />
+            <div
+              class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+            >
+              <a href="Gallery.html" aria-label="View gallery">
+  <span>VIEW GALLERY</span>
+</a>
+            </div>
+          </div>
+          <div
+            class="col-span-1 row-span-1 bg-white flex flex-col justify-center items-center text-center p-8 border border-outline-variant/20"
+          >
+            <span
+              class="font-display-lg text-[48px] text-secondary tracking-editorial mb-2"
+              >700+</span
+            >
+            <p
+              class="font-label-caps text-[10px] tracking-widest text-on-surface-variant"
+            >
+              Followers
+            </p>
+          </div>
+          <div class="col-span-1 row-span-1 overflow-hidden">
+            <img
+              class="w-full h-full object-cover grayscale brightness-110"
+              data-alt="Close up of running shoes and movement on Phnom Penh pavement, morning sun rays, high-contrast black and white aesthetic, documentary grain, high fashion streetwear influence."
+              src="https://res.cloudinary.com/dfefliptm/image/upload/v1782616957/o_house_epijsg.jpg"
+            />
+          </div>
+          <div class="col-span-2 row-span-1">
+            <a
+            href="https://t.me/+ZIHwmnT06j1jYmZl"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="bg-primary text-on-primary p-16 h-full flex items-center justify-between group cursor-pointer overflow-hidden transition-all duration-700 hover:bg-secondary"
+            >
+            <div>
+                          <h4 class="font-headline-md text-headline-md mb-3 tracking-tight">
+                            JOIN THE CIRCLE</h4>
+                            <p class="font-body-md text-body-md opacity-60">
+                              Apply for the next curation.</p>
+                             </div>
+                             <div class="relative w-12 h-12 flex items-center justify-center"> <span
+      class="material-symbols-outlined text-4xl group-hover:translate-x-2 transition-transform"
+      >arrow_forward</span
+    >
+  </div>
+</a>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Footer -->
+    <footer class="bg-surface border-t border-outline-variant/30 py-32">
+      <div
+        class="flex flex-col md:flex-row justify-between items-start w-full px-margin-desktop max-w-container-max mx-auto gap-20"
+      >
+        <div class="md:w-1/3">
+          <div
+            class="font-headline-md text-[24px] font-bold mb-8 tracking-editorial"
+          >
+            THE SOCIAL PHNOM PENH
+          </div>
+          <p class="font-body-md text-on-surface-variant leading-relaxed">
+            A sanctuary for creative exchange and intentional community in the
+            heart of Cambodia.
+          </p>
+        </div>
+        <div class="grid grid-cols-2 gap-24">
+          <div class="flex flex-col gap-6">
+            <span
+              class="font-label-caps text-label-caps text-secondary tracking-label mb-2"
+              >SOCIAL</span
+            >
+            <a
+              class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors tracking-widest"
+              href="https://www.instagram.com/thesocialphnompenh"
+              >INSTAGRAM</a
+            >
+            <a
+              class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors tracking-widest"
+              href="https://t.me/+ourAIz2lPShlYWM1"
+              >Telegram</a
+            >
+            <a
+              class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors tracking-widest"
+              href="https://www.linkedin.com/company/the-social-phnom-penh/"
+              >LINKEDIN</a
+            >
+          </div>
+          <div class="flex flex-col gap-6">
+            <a
+              class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors tracking-widest"
+              href="thesocialphnompenh@gmail.com"
+              >Email</a
+            >
+            <a
+              class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors tracking-widest"
+              href="comingsoon.html"
+              >MEMBERSHIP</a
+            >
+            <a
+              class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors tracking-widest"
+              href="https://linktr.ee/thesocialphnompenh?utm_source=ig&utm_medium=social&utm_content=link_in_bio"
+              >PARTNERSHIPS</a
+            >
+          
+            
+          </div>
+        </div>
+      </div>
+      <div
+        class="max-w-container-max mx-auto px-margin-desktop mt-32 pt-12 border-t border-outline-variant/10 flex flex-col md:flex-row justify-between items-center text-on-surface-variant opacity-50"
+      >
+        <p class="font-label-caps text-[10px] tracking-widest">
+          © 2026 THE SOCIAL PHNOM PENH. ALL RIGHTS RESERVED.
+        </p>
+        <div class="flex gap-8 mt-4 md:mt-0">
+          <a href="privacy%20policy.html" class="font-label-caps text-[10px] tracking-widest hover:text-primary transition-colors">
+            PRIVACY POLICY
+          </a>
+          <p class="font-label-caps text-[10px] tracking-widest">
+            TERMS OF SERVICE
+          </p>
+        </div>
+      </div>
+    </footer>
+    <script>
+      // Smooth transition for navbar on scroll
+      window.addEventListener("scroll", () => {
+        const nav = document.querySelector("nav");
+        if (window.scrollY > 20) {
+          nav.classList.add(
+            "bg-surface/95",
+            "shadow-[0_4px_30px_rgba(0,0,0,0.03)]",
+          );
+          nav.classList.remove("h-20");
+          nav.classList.add("h-16");
+        } else {
+          nav.classList.remove(
+            "bg-surface/95",
+            "shadow-[0_4px_30px_rgba(0,0,0,0.03)]",
+          );
+          nav.classList.add("h-20");
+          nav.classList.remove("h-16");
+        }
+      });
+
+      // Subtle mouse parallax for hero
+      document.addEventListener("mousemove", (e) => {
+        const heroImg = document.querySelector(".absolute.inset-0.z-0 div");
+        const moveX = (e.clientX - window.innerWidth / 2) * 0.005;
+        const moveY = (e.clientY - window.innerHeight / 2) * 0.005;
+        heroImg.style.transform = `scale(1.05) translate(${moveX}px, ${moveY}px)`;
+      });
+    </script>
+    <script>
+      // Mobile Menu Toggle
+      (function () {
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+        const mobileMenuPanel = document.getElementById('mobile-menu-panel');
+        const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+        const hamburgerIcon = document.querySelector('.hamburger-icon');
+        let isOpen = false;
+        mobileMenuBtn.setAttribute('aria-expanded', 'false');
+
+        function openMenu() {
+          isOpen = true;
+          mobileMenuOverlay.classList.remove('hidden');
+          
+          // Trigger reflow to enable transition
+          void mobileMenuPanel.offsetWidth;
+          
+          mobileMenuPanel.style.transform = 'translateX(0)';
+          mobileMenuOverlay.style.opacity = '1';
+          mobileMenuOverlay.style.pointerEvents = 'auto';
+          
+          // Animate hamburger icon
+          hamburgerIcon.textContent = 'close';
+          hamburgerIcon.style.transform = 'rotate(0deg) scale(1)';
+          mobileMenuBtn.setAttribute('aria-label', 'Close navigation menu');
+          mobileMenuBtn.setAttribute('aria-expanded', 'true');
+          
+          // Stagger animation for nav links
+          mobileNavLinks.forEach((link) => {
+            const index = parseInt(link.getAttribute('data-index'));
+            setTimeout(() => {
+              link.style.opacity = '1';
+              link.style.transform = 'translateX(0)';
+            }, 80 + index * 60);
+          });
+          
+          document.body.style.overflow = 'hidden';
+        }
+
+        function closeMenu() {
+          isOpen = false;
+          mobileMenuPanel.style.transform = 'translateX(100%)';
+          mobileMenuOverlay.style.opacity = '0';
+          mobileMenuOverlay.style.pointerEvents = 'none';
+          
+          // Reset hamburger icon
+          hamburgerIcon.textContent = 'menu';
+          hamburgerIcon.style.transform = 'rotate(0deg) scale(1)';
+          mobileMenuBtn.setAttribute('aria-label', 'Open navigation menu');
+          mobileMenuBtn.setAttribute('aria-expanded', 'false');
+          
+          // Reset nav links
+          mobileNavLinks.forEach((link) => {
+            link.style.opacity = '0';
+            link.style.transform = 'translateX(100px)';
+          });
+          
+          setTimeout(() => {
+            if (!isOpen) {
+              mobileMenuOverlay.classList.add('hidden');
+            }
+          }, 500);
+          
+          document.body.style.overflow = '';
+        }
+
+        mobileMenuBtn.addEventListener('click', () => {
+          if (isOpen) {
+            closeMenu();
+          } else {
+            openMenu();
+          }
+        });
+
+        // Close menu when clicking on overlay or links
+        mobileMenuOverlay.addEventListener('click', (e) => {
+          if (e.target === mobileMenuOverlay) {
+            closeMenu();
+          }
+        });
+
+        mobileNavLinks.forEach((link) => {
+          link.addEventListener('click', () => {
+            closeMenu();
+          });
+        });
+
+        // Close menu on escape key
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && isOpen) {
+            closeMenu();
+          }
+        });
+      })();
+
+      // Add 'in-view' / animate classes as sections enter the viewport
+      (function () {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              const el = entry.target;
+              if (entry.isIntersecting) {
+                el.classList.add("in-view");
+                const content = el.querySelectorAll(".section-content");
+                content.forEach((c, i) => {
+                  setTimeout(
+                    () => c.classList.add("in-view", "animate-float"),
+                    i * 80,
+                  );
+                });
+                const heavy = el.querySelectorAll(".heavy-zoom");
+                heavy.forEach((h) => h.classList.add("in-view"));
+                const slow = el.querySelectorAll(".parallax-layer.slow");
+                slow.forEach(
+                  (p, i) => (p.style.transform = `translateY(${-12}px)`),
+                );
+              } else {
+                el.classList.remove("in-view");
+                el.querySelectorAll(".section-content").forEach((c) =>
+                  c.classList.remove("in-view", "animate-float"),
+                );
+                el.querySelectorAll(".heavy-zoom").forEach((h) =>
+                  h.classList.remove("in-view"),
+                );
+                el.querySelectorAll(".parallax-layer.slow").forEach(
+                  (p) => (p.style.transform = "translateY(0)"),
+                );
+              }
+            });
+          },
+          { threshold: 0.18 },
+        );
+
+        document
+          .querySelectorAll("section")
+          .forEach((s) => observer.observe(s));
+      })();
+    </script>
+  </body>
+</html>

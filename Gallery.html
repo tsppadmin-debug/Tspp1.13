@@ -1,0 +1,953 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>THE SOCIAL PHNOM PENH | Community is Culture</title>
+<link href="static/thesocial_logo.ico" rel="icon" type="image/x-icon">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-low": "#f7f3f2",
+                        "tertiary": "#000000",
+                        "on-surface-variant": "#444748",
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#efefff",
+                        "surface-tint": "#5f5e5e",
+                        "surface": "#fdf8f8",
+                        "secondary-container": "#2e5bff",
+                        "surface-container-high": "#ebe7e6",
+                        "inverse-surface": "#313030",
+                        "on-tertiary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-surface": "#1c1b1b",
+                        "outline-variant": "#c4c7c7",
+                        "on-secondary-fixed": "#001356",
+                        "inverse-primary": "#c8c6c5",
+                        "on-primary": "#ffffff",
+                        "surface-bright": "#fdf8f8",
+                        "secondary": "#00A3FF", // Polished light blue accent
+                        "background": "#fdf8f8",
+                        "primary-container": "#1c1b1b",
+                        "outline": "#747878",
+                        "on-error": "#ffffff",
+                        "inverse-on-surface": "#f4f0ef",
+                        "on-secondary": "#ffffff",
+                        "on-background": "#1c1b1b",
+                        "tertiary-fixed": "#e6e2df",
+                        "secondary-fixed": "#dde1ff",
+                        "on-tertiary-fixed-variant": "#484645",
+                        "primary": "#000000",
+                        "on-tertiary-container": "#868382",
+                        "tertiary-fixed-dim": "#cac6c4",
+                        "surface-dim": "#ddd9d8",
+                        "on-primary-fixed-variant": "#474746",
+                        "primary-fixed-dim": "#c8c6c5",
+                        "tertiary-container": "#1c1b1a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed": "#1c1b1a",
+                        "surface-container-highest": "#e5e2e1",
+                        "surface-container": "#f1edec",
+                        "on-error-container": "#93000a",
+                        "primary-fixed": "#e5e2e1",
+                        "on-primary-fixed": "#1c1b1b",
+                        "secondary-fixed-dim": "#b8c3ff",
+                        "on-secondary-fixed-variant": "#0035be",
+                        "surface-variant": "#e5e2e1",
+                        "on-primary-container": "#858383"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "16px", // Tightened grid
+                        "section-gap": "160px", // Generous whitespace
+                        "container-max": "1440px", // High-fidelity width
+                        "margin-desktop": "80px", // Increased margin for airiness
+                        "margin-mobile": "24px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Outfit"],
+                        "headline-lg-mobile": ["Outfit"],
+                        "caption": ["Outfit"],
+                        "headline-lg": ["Outfit"],
+                        "label-caps": ["Outfit"],
+                        "headline-md": ["Outfit"],
+                        "display-lg": ["Outfit"],
+                        "body-md": ["Outfit"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "1.7", "letterSpacing": "0.01em", "fontWeight": "300"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "500"}],
+                        "caption": ["13px", {"lineHeight": "1.5", "letterSpacing": "0.04em", "fontWeight": "400"}],
+                        "headline-lg": ["40px", {"lineHeight": "1.1", "letterSpacing": "-0.03em", "fontWeight": "500"}],
+                        "label-caps": ["11px", {"lineHeight": "1.0", "letterSpacing": "0.15em", "fontWeight": "600"}],
+                        "headline-md": ["28px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "400"}],
+                        "display-lg": ["72px", {"lineHeight": "0.95", "letterSpacing": "-0.05em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "letterSpacing": "0.01em", "fontWeight": "300"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #fdf8f8;
+            color: #1c1b1b;
+            -webkit-font-smoothing: antialiased;
+            font-family: 'Outfit', sans-serif;
+        }
+        .architectural-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 16px;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        /* Custom Tracking for Editorial Feel */
+        .tracking-editorial { letter-spacing: -0.04em; }
+        .tracking-label { letter-spacing: 0.25em; }
+            /* Scrolling / heavy animation additions */
+            html, body {
+                scroll-behavior: smooth;
+            }
+            body {
+                -webkit-overflow-scrolling: touch;
+            }
+            /* Snap sections to create a strong scrolling feel */
+            html { scroll-snap-type: y proximity; }
+            section { scroll-snap-align: start; scroll-snap-stop: always; }
+
+            /* Parallax background helper */
+            .parallax-bg { background-attachment: fixed; background-size: cover; background-position: center; will-change: transform; }
+
+            /* Entrance animation for section content (drama on scroll) */
+            .section-content { transform: translateY(40px) scale(0.98); opacity: 0; transition: transform 800ms cubic-bezier(.2,.9,.2,1), opacity 800ms ease; }
+            .section-content.in-view { transform: translateY(0) scale(1); opacity: 1; }
+
+            /* Extra motion for images and hero */
+            .heavy-zoom { transition: transform 1200ms cubic-bezier(.2,.9,.2,1); will-change: transform; }
+            .heavy-zoom.in-view { transform: scale(1.06); }
+
+            /* Subtle parallax layers inside sections */
+            .parallax-layer { transform: translateY(0); transition: transform 1000ms linear; }
+            .parallax-layer.slow { transition-duration: 1600ms; }
+
+            /* Keyframes for alternate animations */
+            @keyframes floatUp {
+                from {
+                    transform: translateY(30px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+        /* Gallery Image Animations */
+        .gallery-image {
+            animation: imageFadeSlide 0.8s cubic-bezier(0.2, 0.9, 0.2, 1) forwards;
+            opacity: 0;
+        }
+        
+        @keyframes imageFadeSlide {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .kinetic-scroll-item:nth-child(1) .gallery-image { animation-delay: 0.1s; }
+        .kinetic-scroll-item:nth-child(2) .gallery-image { animation-delay: 0.2s; }
+        .kinetic-scroll-item:nth-child(3) .gallery-image { animation-delay: 0.3s; }
+        .kinetic-scroll-item:nth-child(4) .gallery-image { animation-delay: 0.2s; }
+        .kinetic-scroll-item:nth-child(5) .gallery-image { animation-delay: 0.4s; }
+        .kinetic-scroll-item:nth-child(6) .gallery-image { animation-delay: 0.3s; }
+        
+        .gallery-card:hover .gallery-image {
+            transform: scale(1.05);
+        }
+        
+        /* Modal Animations */
+        #gallery-modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        #gallery-modal.active .bg-surface {
+            transform: scale(1);
+        }
+        
+        #gallery-modal {
+            backdrop-filter: blur(4px);
+        }
+        
+        /* Dark mode body transitions */
+        html.dark body {
+            background-color: #1a1a1a;
+            color: #f4f0ef;
+        }
+
+        .animate-float { animation: floatUp 900ms cubic-bezier(.2,.9,.2,1) both; }
+            /* Dark Mode Enhancements */
+        html.dark {
+            color-scheme: dark;
+        }
+        
+        html.dark body {
+            background-color: #0d0d0d;
+        }
+        
+        html.dark .bg-surface {
+            background-color: #1a1a1a;
+        }
+        
+        html.dark .bg-inverse-surface {
+            background-color: #313030;
+        }
+        
+        html.dark .bg-surface-container {
+            background-color: #242424;
+        }
+        
+        html.dark .text-primary {
+            color: #f4f0ef;
+        }
+        
+        /* Smooth transitions for mode switching */
+        html, body, nav, section, footer, button, .gallery-card, #gallery-modal {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+</style>
+</head>
+<body class="font-body-md" id="main-body">
+    <!-- Mobile Navigation Overlay -->
+    <div
+      id="mobile-menu-overlay"
+      class="hidden fixed inset-0 z-40 bg-surface/10 backdrop-blur-md transition-all duration-500"
+    >
+      <div
+        id="mobile-menu-panel"
+        class="fixed top-0 right-0 h-screen w-full max-w-sm bg-surface/95 backdrop-blur-xl shadow-2xl transform translate-x-full transition-transform duration-700 ease-out overflow-y-auto"
+      >
+        <div class="p-8 pt-24 flex flex-col h-full">
+          <div class="flex-1 space-y-2">
+            <a
+              href="index.html"
+              class="mobile-nav-link block py-5 px-6 font-headline-md text-headline-md text-primary hover:bg-primary/5 transition-all duration-300 transform translate-x-full opacity-0"
+              data-index="0"
+              >Home</a
+            >
+            <a
+              href="About.html"
+              class="mobile-nav-link block py-5 px-6 font-headline-md text-headline-md text-primary hover:bg-primary/5 transition-all duration-300 transform translate-x-full opacity-0"
+              data-index="1"
+              >About</a
+            >
+            <a
+              href="Event.html"
+              class="mobile-nav-link block py-5 px-6 font-headline-md text-headline-md text-primary hover:bg-primary/5 transition-all duration-300 transform translate-x-full opacity-0"
+              data-index="2"
+              >Events</a
+            >
+            <a
+              href="Partners.html"
+              class="mobile-nav-link block py-5 px-6 font-headline-md text-headline-md text-primary hover:bg-primary/5 transition-all duration-300 transform translate-x-full opacity-0"
+              data-index="3"
+              >Partners</a
+            >
+            <a
+              href="Gallery.html"
+              class="mobile-nav-link block py-5 px-6 font-headline-md text-headline-md text-primary hover:bg-primary/5 transition-all duration-300 transform translate-x-full opacity-0"
+              data-index="4"
+              >Gallery</a
+            >
+            <a
+              href="Members.html"
+              class="mobile-nav-link block py-5 px-6 font-headline-md text-headline-md text-primary hover:bg-primary/5 transition-all duration-300 transform translate-x-full opacity-0"
+              data-index="5"
+              >Members</a
+            >
+          </div>
+          <div class="border-t border-primary/10 pt-8 pb-8 opacity-0 transform translate-x-full transition-all duration-700" style="transition-delay: 400ms">
+            <p class="font-label-caps text-label-caps text-on-surface-variant tracking-label mb-4">CONNECT</p>
+            <div class="flex gap-4">
+              <a href="#" class="text-primary hover:text-secondary transition-colors">
+                <span class="material-symbols-outlined">public</span>
+              </a>
+              <a href="#" class="text-primary hover:text-secondary transition-colors">
+                <span class="material-symbols-outlined">mail</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TopNavBar -->
+    <nav
+      class="site-nav bg-surface/90 backdrop-blur-sm border-b border-outline-variant/30 top-0 z-50 fixed w-full"
+    >
+      <div
+        class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-base max-w-container-max mx-auto h-20"
+      >
+        <a
+          class="site-brand font-headline-md text-[20px] font-bold text-primary"
+          href="index.html"
+          >THE SOCIAL PHNOM PENH</a
+        >
+        <div class="hidden md:flex gap-10 items-center">
+          <a
+            class="nav-link font-label-caps text-label-caps cursor-pointer"
+            href="index.html"
+            >Home</a
+          >
+          <a
+            class="nav-link font-label-caps text-label-caps cursor-pointer"
+            href="About.html"
+            >About</a
+          >
+          <a
+            class="nav-link font-label-caps text-label-caps cursor-pointer"
+            href="Event.html"
+            >Events</a
+          >
+          <a
+            class="nav-link font-label-caps text-label-caps cursor-pointer"
+            href="Partners.html"
+            >Partners</a
+          >
+          <a
+            class="nav-link font-label-caps text-label-caps cursor-pointer is-active"
+            href="Gallery.html"
+            >Gallery</a
+          >
+          <a
+            class="nav-link font-label-caps text-label-caps cursor-pointer"
+            href="comingsoon.html"
+            >Coming Soon</a
+          >
+        </div>
+        <button
+          id="mobile-menu-btn"
+          class="md:hidden text-primary z-40 relative hamburger"
+          aria-label="Open navigation menu"
+        >
+          <span class="material-symbols-outlined hamburger-icon">menu</span>
+        </button>
+      </div>
+    </nav>
+<main class="pt-[100px] pb-2xl">
+<!-- Live Feed Status Section -->
+<section class="px-lg md:px-2xl mb-xl flex flex-col md:flex-row md:items-end justify-between gap-md">
+<div>
+<div class="flex items-center gap-sm mb-xs">
+<span class="w-3 h-3 bg-[#00A3FF] rounded-full live-indicator shadow-[0_0_10px_#00A3FF]"></span>
+<span class="font-label-sm text-label-sm text-[#00A3FF] uppercase tracking-widest">Live Documentary Feed</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg uppercase leading-none dark:text-surface-bright">Phnom Penh <br/>2.0 Series</h2>
+</div>
+<div class="md:text-right max-w-sm">
+<p class="font-body-md text-body-md text-on-surface-variant dark:text-outline-variant italic">
+Capturing the highlights of each events                </p>
+</div>
+</section>
+<!-- Bento Architectural Grid -->
+<section class="px-lg md:px-2xl grid grid-cols-1 md:grid-cols-12 gap-base auto-rows-[280px]">
+<div class="md:col-span-8 md:row-span-2 relative overflow-hidden group kinetic-scroll-item rounded-lg gallery-card cursor-pointer transition-all duration-300 hover:shadow-lg dark:hover:shadow-lg dark:hover:shadow-secondary/20" data-gallery-id="hero1">
+<img src="https://res.cloudinary.com/dfefliptm/image/upload/v1782616954/Jiangnightgroup1_szzqnj.jpg" alt="The Social community gathering" class="w-full h-full object-cover gallery-image" loading="lazy" />
+<div class="absolute inset-0 noir-gradient flex flex-col justify-end p-lg">
+<span class="font-label-sm text-label-sm bg-secondary text-white px-base py-xs mb-sm inline-block w-fit">FEATURED</span>
+<h3 class="text-white font-headline-md text-headline-md leading-tight">Front Row Energy</h3>
+</div>
+</div>
+
+<div class="md:col-span-4 md:row-span-3 relative overflow-hidden group kinetic-scroll-item rounded-lg gallery-card cursor-pointer transition-all duration-300 hover:shadow-lg dark:hover:shadow-lg dark:hover:shadow-secondary/20" data-gallery-id="portrait1">
+<img src="https://res.cloudinary.com/dfefliptm/image/upload/v1782616955/charity_sejruo.jpg" alt="Friends at a Social event" class="w-full h-full object-cover gallery-image" loading="lazy" />
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
+<div class="absolute bottom-lg left-lg right-lg">
+<span class="font-label-sm text-label-sm text-white/70 uppercase tracking-widest">People</span>
+<h3 class="text-white font-headline-md text-headline-md">The Girls</h3>
+</div>
+</div>
+
+<div class="md:col-span-4 md:row-span-2 relative overflow-hidden group kinetic-scroll-item rounded-lg gallery-card cursor-pointer transition-all duration-300 hover:shadow-lg dark:hover:shadow-lg dark:hover:shadow-secondary/20" data-gallery-id="square1">
+<img src="https://res.cloudinary.com/dfefliptm/image/upload/v1782616955/umimatcha3_woguof.jpg" alt="Umi Matcha gathering" class="w-full h-full object-cover gallery-image" loading="lazy" />
+<div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent"></div>
+<div class="absolute bottom-md left-md right-md">
+<span class="font-label-sm text-label-sm text-white/70 uppercase">Cafe Night</span>
+<h3 class="text-white font-headline-md text-headline-md">Umi Matcha</h3>
+</div>
+</div>
+
+<div class="md:col-span-4 md:row-span-1 relative overflow-hidden group kinetic-scroll-item rounded-lg gallery-card cursor-pointer transition-all duration-300 hover:shadow-lg dark:hover:shadow-secondary/20" data-gallery-id="text1">
+<img src="https://res.cloudinary.com/dfefliptm/image/upload/v1782616952/kirirom1_wmdpbl.jpg" alt="Candid side shot at The Social" class="w-full h-full object-cover gallery-image" loading="lazy" />
+<div class="absolute inset-0 bg-gradient-to-r from-black/75 to-black/10 p-lg flex flex-col justify-center">
+<p class="font-label-sm text-label-sm text-white/70 mb-xs uppercase tracking-widest"></p>
+<p class="font-body-md text-body-md text-white font-bold leading-tight"></p>
+</div>
+</div>
+
+<div class="md:col-span-4 md:row-span-2 relative overflow-hidden group kinetic-scroll-item rounded-lg gallery-card cursor-pointer transition-all duration-300 hover:shadow-lg dark:hover:shadow-lg dark:hover:shadow-secondary/20" data-gallery-id="portrait2">
+<img src="https://res.cloudinary.com/dfefliptm/image/upload/v1782616952/frontshot_jrkynt.jpg" alt="Le Club Social gathering" class="w-full h-full object-cover gallery-image" loading="lazy" />
+<div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent"></div>
+<div class="absolute bottom-lg left-lg right-lg">
+<span class="font-label-sm text-label-sm text-white/70 uppercase">Night Out</span>
+<h3 class="text-white font-headline-md text-headline-md leading-none">Le Club</h3>
+</div>
+</div>
+
+<div class="md:col-span-8 md:row-span-2 relative overflow-hidden group kinetic-scroll-item rounded-lg gallery-card cursor-pointer transition-all duration-300 hover:shadow-lg dark:hover:shadow-lg dark:hover:shadow-secondary/20" data-gallery-id="landscape1">
+<img src="https://res.cloudinary.com/dfefliptm/image/upload/v1782616954/theoscialnight_fdb7eu.jpg" alt="Jiang movie night group photo" class="w-full h-full object-cover gallery-image" loading="lazy" />
+<div class="absolute inset-0 noir-gradient"></div>
+<div class="absolute top-lg left-lg">
+<div class="bg-white/10 backdrop-blur-md px-md py-xs rounded flex items-center gap-xs">
+<span class="material-symbols-outlined text-white text-sm">photo_camera</span>
+<span class="font-label-sm text-label-sm text-white uppercase">Group Memory</span>
+</div>
+</div>
+<div class="absolute bottom-lg left-lg">
+<h3 class="text-white font-headline-lg text-headline-lg">Movie Night</h3>
+</div>
+</div>
+
+<div class="md:col-span-3 md:row-span-2 relative overflow-hidden group kinetic-scroll-item rounded-lg gallery-card cursor-pointer transition-all duration-300 hover:shadow-lg dark:hover:shadow-lg dark:hover:shadow-secondary/20" data-gallery-id="card7">
+<img src="https://res.cloudinary.com/dfefliptm/image/upload/v1782616952/Ascaro1_wurbee.jpg" alt="Ascaro community event" class="w-full h-full object-cover gallery-image" loading="lazy" />
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
+<div class="absolute bottom-md left-md right-md">
+<span class="font-label-sm text-label-sm text-white/70 uppercase">Ascaro</span>
+<h3 class="text-white font-headline-md text-headline-md">Court Side</h3>
+</div>
+</div>
+
+<div class="md:col-span-3 md:row-span-2 relative overflow-hidden group kinetic-scroll-item rounded-lg gallery-card cursor-pointer transition-all duration-300 hover:shadow-lg dark:hover:shadow-lg dark:hover:shadow-secondary/20" data-gallery-id="card8">
+<img src="https://res.cloudinary.com/dfefliptm/image/upload/v1782616956/yoga2_tvvpwz.jpg" alt="Yoga and wellness gathering" class="w-full h-full object-cover gallery-image" loading="lazy" />
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
+<div class="absolute bottom-md left-md right-md">
+<span class="font-label-sm text-label-sm text-white/70 uppercase">Wellness</span>
+<h3 class="text-white font-headline-md text-headline-md">Yoga Session</h3>
+</div>
+</div>
+
+<div class="md:col-span-3 md:row-span-2 relative overflow-hidden group kinetic-scroll-item rounded-lg gallery-card cursor-pointer transition-all duration-300 hover:shadow-lg dark:hover:shadow-lg dark:hover:shadow-secondary/20" data-gallery-id="card9">
+<img src="https://res.cloudinary.com/dfefliptm/image/upload/v1782890391/DSC04936_olarkq.jpg" alt="Trail Run at Koh Dach" class="w-full h-full object-cover gallery-image" loading="lazy" />
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
+<div class="absolute bottom-md left-md right-md">
+<span class="font-label-sm text-label-sm text-white/70 uppercase">Outdoor</span>
+<h3 class="text-white font-headline-md text-headline-md">Kirirom Hike</h3>
+</div>
+</div>
+
+<div class="md:col-span-3 md:row-span-2 relative overflow-hidden group kinetic-scroll-item rounded-lg gallery-card cursor-pointer transition-all duration-300 hover:shadow-lg dark:hover:shadow-lg dark:hover:shadow-secondary/20" data-gallery-id="card10">
+<img src="https://res.cloudinary.com/dfefliptm/image/upload/v1782616975/merch_fao3yx.jpg" alt="Sabay bowling night" class="w-full h-full object-cover gallery-image" loading="lazy" />
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
+<div class="absolute bottom-md left-md right-md">
+<span class="font-label-sm text-label-sm text-white/70 uppercase">Games</span>
+<h3 class="text-white font-headline-md text-headline-md">Bowling Night</h3>
+</div>
+</div>
+</section>
+
+<!-- Modal Content -->
+
+<div>
+
+</div>
+<!-- Interaction Trigger: Load More -->
+
+</main>
+    <!-- Footer -->
+    <footer class="bg-surface border-t border-outline-variant/30 py-32">
+      <div
+        class="flex flex-col md:flex-row justify-between items-start w-full px-margin-desktop max-w-container-max mx-auto gap-20"
+      >
+        <div class="md:w-1/3">
+          <div
+            class="font-headline-md text-[24px] font-bold mb-8 tracking-editorial"
+          >
+            THE SOCIAL PHNOM PENH
+          </div>
+          <p class="font-body-md text-on-surface-variant leading-relaxed">
+            A communityfor creative exchange and intentional community in the
+            heart of Cambodia.
+          </p>
+        </div>
+        <div class="grid grid-cols-2 gap-24">
+          <div class="flex flex-col gap-6">
+            <span
+              class="font-label-caps text-label-caps text-secondary tracking-label mb-2"
+              >SOCIAL</span
+            >
+            <a
+              class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors tracking-widest"
+              href="https://www.instagram.com/thesocialphnompenh/"
+              >INSTAGRAM</a
+            >
+            <a
+              class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors tracking-widest"
+              href="https://www.tiktok.com/@thesocialpnh"
+              >TIKTOK</a
+            >
+            <a
+              class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors tracking-widest"
+              href="https://www.linkedin.com/company/the-social-phnom-penh/"
+              >LINKEDIN</a
+            >
+          </div>
+          <div class="flex flex-col gap-6">
+            <span
+              class="font-label-caps text-label-caps text-secondary tracking-label mb-2"
+              >CONNECT</span
+            >
+            <a
+              class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors tracking-widest"
+              href="comingsoon.html"
+              >MEMBERSHIP</a
+            >
+            <a
+              class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors tracking-widest"
+              href="https://linktr.ee/thesocialphnompenh?utm_source=ig&utm_medium=social&utm_content=link_in_bio"
+              >PARTNERSHIPS</a
+            >
+            <a
+              class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors tracking-widest"
+              href="https://linktr.ee/thesocialphnompenh?utm_source=ig&utm_medium=social&utm_content=link_in_bio"
+              >CONTACT</a
+            >
+            
+          </div>
+        </div>
+      </div>
+      <div
+        class="max-w-container-max mx-auto px-margin-desktop mt-32 pt-12 border-t border-outline-variant/10 flex flex-col md:flex-row justify-between items-center text-on-surface-variant opacity-50"
+      >
+        <p class="font-label-caps text-[10px] tracking-widest">
+          © 2026 THE SOCIAL PHNOM PENH. ALL RIGHTS RESERVED.
+        </p>
+        <div class="flex gap-8 mt-4 md:mt-0">
+          <a href="privacy%20policy.html" class="font-label-caps text-[10px] tracking-widest hover:text-primary transition-colors">
+            PRIVACY POLICY
+          </a>
+          <p class="font-label-caps text-[10px] tracking-widest">
+            TERMS OF SERVICE
+          </p>
+        </div>
+      </div>
+    </footer>
+    <script>
+      // Smooth transition for navbar on scroll
+      window.addEventListener("scroll", () => {
+        const nav = document.querySelector("nav");
+        if (window.scrollY > 20) {
+          nav.classList.add(
+            "bg-surface/95",
+            "shadow-[0_4px_30px_rgba(0,0,0,0.03)]",
+          );
+          nav.classList.remove("h-20");
+          nav.classList.add("h-16");
+        } else {
+          nav.classList.remove(
+            "bg-surface/95",
+            "shadow-[0_4px_30px_rgba(0,0,0,0.03)]",
+          );
+          nav.classList.add("h-20");
+          nav.classList.remove("h-16");
+        }
+      });
+
+      // Subtle mouse parallax for hero
+      document.addEventListener("mousemove", (e) => {
+        const heroImg = document.querySelector(".absolute.inset-0.z-0 div");
+        const moveX = (e.clientX - window.innerWidth / 2) * 0.005;
+        const moveY = (e.clientY - window.innerHeight / 2) * 0.005;
+        heroImg.style.transform = `scale(1.05) translate(${moveX}px, ${moveY}px)`;
+      });
+    </script>
+    <script>
+      // Mobile Menu Toggle
+      (function () {
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+        const mobileMenuPanel = document.getElementById('mobile-menu-panel');
+        const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+        const hamburgerIcon = document.querySelector('.hamburger-icon');
+        let isOpen = false;
+        mobileMenuBtn.setAttribute('aria-expanded', 'false');
+
+        function openMenu() {
+          isOpen = true;
+          mobileMenuOverlay.classList.remove('hidden');
+          
+          // Trigger reflow to enable transition
+          void mobileMenuPanel.offsetWidth;
+          
+          mobileMenuPanel.style.transform = 'translateX(0)';
+          mobileMenuOverlay.style.opacity = '1';
+          mobileMenuOverlay.style.pointerEvents = 'auto';
+          
+          // Animate hamburger icon
+          hamburgerIcon.textContent = 'close';
+          hamburgerIcon.style.transform = 'rotate(0deg) scale(1)';
+          mobileMenuBtn.setAttribute('aria-label', 'Close navigation menu');
+          mobileMenuBtn.setAttribute('aria-expanded', 'true');
+          
+          // Stagger animation for nav links
+          mobileNavLinks.forEach((link) => {
+            const index = parseInt(link.getAttribute('data-index'));
+            setTimeout(() => {
+              link.style.opacity = '1';
+              link.style.transform = 'translateX(0)';
+            }, 80 + index * 60);
+          });
+          
+          document.body.style.overflow = 'hidden';
+        }
+
+        function closeMenu() {
+          isOpen = false;
+          mobileMenuPanel.style.transform = 'translateX(100%)';
+          mobileMenuOverlay.style.opacity = '0';
+          mobileMenuOverlay.style.pointerEvents = 'none';
+          
+          // Reset hamburger icon
+          hamburgerIcon.textContent = 'menu';
+          hamburgerIcon.style.transform = 'rotate(0deg) scale(1)';
+          mobileMenuBtn.setAttribute('aria-label', 'Open navigation menu');
+          mobileMenuBtn.setAttribute('aria-expanded', 'false');
+          
+          // Reset nav links
+          mobileNavLinks.forEach((link) => {
+            link.style.opacity = '0';
+            link.style.transform = 'translateX(100px)';
+          });
+          
+          setTimeout(() => {
+            if (!isOpen) {
+              mobileMenuOverlay.classList.add('hidden');
+            }
+          }, 500);
+          
+          document.body.style.overflow = '';
+        }
+
+        mobileMenuBtn.addEventListener('click', () => {
+          if (isOpen) {
+            closeMenu();
+          } else {
+            openMenu();
+          }
+        });
+
+        // Close menu when clicking on overlay or links
+        mobileMenuOverlay.addEventListener('click', (e) => {
+          if (e.target === mobileMenuOverlay) {
+            closeMenu();
+          }
+        });
+
+        mobileNavLinks.forEach((link) => {
+          link.addEventListener('click', () => {
+            closeMenu();
+          });
+        });
+
+        // Close menu on escape key
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && isOpen) {
+            closeMenu();
+          }
+        });
+      })();
+
+      // Add 'in-view' / animate classes as sections enter the viewport
+      (function () {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              const el = entry.target;
+              if (entry.isIntersecting) {
+                el.classList.add("in-view");
+                const content = el.querySelectorAll(".section-content");
+                content.forEach((c, i) => {
+                  setTimeout(
+                    () => c.classList.add("in-view", "animate-float"),
+                    i * 80,
+                  );
+                });
+                const heavy = el.querySelectorAll(".heavy-zoom");
+                heavy.forEach((h) => h.classList.add("in-view"));
+                const slow = el.querySelectorAll(".parallax-layer.slow");
+                slow.forEach(
+                  (p, i) => (p.style.transform = `translateY(${-12}px)`),
+                );
+              } else {
+                el.classList.remove("in-view");
+                el.querySelectorAll(".section-content").forEach((c) =>
+                  c.classList.remove("in-view", "animate-float"),
+                );
+                el.querySelectorAll(".heavy-zoom").forEach((h) =>
+                  h.classList.remove("in-view"),
+                );
+                el.querySelectorAll(".parallax-layer.slow").forEach(
+                  (p) => (p.style.transform = "translateY(0)"),
+                );
+              }
+            });
+          },
+          { threshold: 0.18 },
+        );
+
+        document
+          .querySelectorAll("section")
+          .forEach((s) => observer.observe(s));
+      })();
+
+
+        // Kinetic Continuity Scroll Interaction
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    // Add slight velocity-based shift if scrolling fast
+                    const rect = entry.target.getBoundingClientRect();
+                    const delay = Math.min(rect.top / 1000, 0.5);
+                    entry.target.style.transitionDelay = `${delay}s`;
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.kinetic-scroll-item').forEach(item => {
+            observer.observe(item);
+        });
+
+        // Simple parallax effect on scroll for images
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            document.querySelectorAll('.kinetic-scroll-item img').forEach(img => {
+                const speed = 0.05;
+                const yPos = -(scrolled * speed);
+                img.style.transform = `translateY(${yPos}px) scale(1.1)`;
+            });
+        });
+    </script>
+    <script>
+      // Mobile Menu Toggle
+      (function () {
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+        const mobileMenuPanel = document.getElementById('mobile-menu-panel');
+        const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+        const hamburgerIcon = document.querySelector('.hamburger-icon');
+        let isOpen = false;
+        mobileMenuBtn.setAttribute('aria-expanded', 'false');
+
+        function openMenu() {
+          isOpen = true;
+          mobileMenuOverlay.classList.remove('hidden');
+          void mobileMenuPanel.offsetWidth;
+          mobileMenuPanel.style.transform = 'translateX(0)';
+          mobileMenuOverlay.style.opacity = '1';
+          mobileMenuOverlay.style.pointerEvents = 'auto';
+          hamburgerIcon.textContent = 'close';
+          hamburgerIcon.style.transform = 'rotate(0deg) scale(1)';
+          mobileMenuBtn.setAttribute('aria-label', 'Close navigation menu');
+          mobileMenuBtn.setAttribute('aria-expanded', 'true');
+          mobileNavLinks.forEach((link) => {
+            const index = parseInt(link.getAttribute('data-index'));
+            setTimeout(() => {
+              link.style.opacity = '1';
+              link.style.transform = 'translateX(0)';
+            }, 80 + index * 60);
+          });
+          document.body.style.overflow = 'hidden';
+        }
+
+        function closeMenu() {
+          isOpen = false;
+          mobileMenuPanel.style.transform = 'translateX(100%)';
+          mobileMenuOverlay.style.opacity = '0';
+          mobileMenuOverlay.style.pointerEvents = 'none';
+          hamburgerIcon.textContent = 'menu';
+          hamburgerIcon.style.transform = 'rotate(0deg) scale(1)';
+          mobileMenuBtn.setAttribute('aria-label', 'Open navigation menu');
+          mobileMenuBtn.setAttribute('aria-expanded', 'false');
+          mobileNavLinks.forEach((link) => {
+            link.style.opacity = '0';
+            link.style.transform = 'translateX(100px)';
+          });
+          setTimeout(() => {
+            if (!isOpen) mobileMenuOverlay.classList.add('hidden');
+          }, 500);
+          document.body.style.overflow = '';
+        }
+
+        mobileMenuBtn.addEventListener('click', () => {
+          isOpen ? closeMenu() : openMenu();
+        });
+
+        mobileMenuOverlay.addEventListener('click', (e) => {
+          if (e.target === mobileMenuOverlay) closeMenu();
+        });
+
+        mobileNavLinks.forEach((link) => {
+          link.addEventListener('click', () => closeMenu());
+        });
+
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && isOpen) closeMenu();
+        });
+      })();
+    </script>    <script>
+      
+      // Gallery Card Modal
+      (function() {
+        const modal = document.getElementById('gallery-modal');
+        const closeBtn = document.getElementById('close-modal');
+        const galleryCards = document.querySelectorAll('.gallery-card');
+        
+        const galleryData = {
+          hero1: {
+            title: 'F',
+            image: 'static/frontshot.jpg',
+            metadata: 'Community highlight',
+            location: 'The Social Phnom Penh',
+            description: 'We also do Yoga.',
+            timestamp: 'Archive selection'
+          },
+          portrait1: {
+            title: 'The Girls',
+            image: 'static/Thegirls.jpg',
+            metadata: 'People and community',
+            location: 'Phnom Penh',
+            description: '4/6 of the Social Board .',
+            timestamp: 'Archive selection'
+          },
+          square1: {
+            title: 'Umi Matcha',
+            image: 'static/umimatcha3.jpg',
+            metadata: 'Cafe gathering',
+            location: 'Umi Matcha',
+            description: 'We like to whisk matcha also.',
+            timestamp: 'Archive selection'
+          },
+          text1: {
+            title: 'Side Shot',
+            image: 'static/sideshot.jpg',
+            metadata: 'Candid detail',
+            location: 'The Social Phnom Penh',
+            description: 'A small in-between frame.',
+            timestamp: 'Archive selection'
+          },
+          portrait2: {
+            title: 'Le Club',
+            image: 'static/leclub1.jpg',
+            metadata: 'Night archive',
+            location: 'Le Club',
+            description: 'we also do climbing.',
+            timestamp: 'Archive selection'
+          },
+          landscape1: {
+            title: 'Movie Night',
+            image: 'static/Jiangnightgroup1.jpg',
+            metadata: 'Group memory',
+            location: 'Jiang Movie Night',
+            description: 'Movie Night at Sabay.',
+            timestamp: 'Archive selection'
+          },
+          card7: {
+            title: 'Court Side',
+            image: 'static/Ascaro.jpg',
+            metadata: 'Sports and community',
+            location: 'Ascaro',
+            description: 'Community Pickleball session .',
+            timestamp: 'Archive selection'
+          },
+          card8: {
+            title: 'Yoga Session',
+            image: 'static/yoga2.jpg',
+            metadata: 'Wellness gathering',
+            location: 'Phnom Penh',
+            description: 'Yoga.',
+            timestamp: 'Archive selection'
+          },
+          card9: {
+            title: 'Kirirom Hike',
+            image: 'static/kirirom1.jpg',
+            metadata: 'Outdoor community',
+            location: 'Kirirom',
+            description: 'Out of the city.',
+            timestamp: 'Archive selection'
+          },
+          card10: {
+            title: 'Bowling Night',
+            image: 'static/sabaybowlingnight.JPG',
+            metadata: 'Games and gathering',
+            location: 'Sabay Bowling',
+            description: 'Rolling ball.',
+            timestamp: 'Archive selection'
+          }
+        };
+        
+        galleryCards.forEach(card => {
+          card.addEventListener('click', () => {
+            const id = card.getAttribute('data-gallery-id');
+            const data = galleryData[id];
+            
+            if (data) {
+              document.getElementById('modal-title').textContent = data.title;
+              document.getElementById('modal-image').src = data.image;
+              document.getElementById('modal-image').alt = data.title;
+              document.getElementById('modal-metadata').textContent = data.metadata;
+              document.getElementById('modal-location').textContent = data.location;
+              document.getElementById('modal-description').textContent = data.description;
+              document.getElementById('modal-timestamp').textContent = data.timestamp;
+              
+              modal.classList.remove('hidden');
+              modal.classList.add('active');
+              document.body.style.overflow = 'hidden';
+            }
+          });
+        });
+
+        function closeModal() {
+          modal.classList.remove('active');
+          document.body.style.overflow = '';
+          setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        closeBtn.addEventListener('click', closeModal);
+        
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) {
+            closeModal();
+          }
+        });
+        
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal();
+          }
+        });
+      })();
+    </script>
+</body></html>
