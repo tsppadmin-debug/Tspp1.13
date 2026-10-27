@@ -327,7 +327,7 @@
           .map((p) => {
             const od = p.next_follow_up && p.next_follow_up <= t && !closedStage(p);
             return `<tr class="click" data-id="${esc(p.id)}">
-              <td><strong>${esc(p.name)}</strong><div class="sub">${esc(CATEGORIES[p.category] || p.category)}</div></td>
+              <td><strong>${esc(p.name)}</strong>${p.published ? ' <span class="badge s-won">On website</span>' : ""}<div class="sub">${esc(CATEGORIES[p.category] || p.category)}</div></td>
               <td><span class="badge s-${esc(p.stage)}">${esc(STAGES[p.stage] || p.stage)}</span></td>
               <td>${esc(p.contact_name || "-")}<div class="sub">${esc(p.contact_email || p.contact_phone || "")}</div></td>
               <td class="num">${p.value_usd ? money(p.value_usd) : "-"}</td>
@@ -359,9 +359,37 @@
     downloadCsv(`partners-${today()}.csv`, ["Name", "Category", "Stage", "Contact", "Email", "Phone", "Value USD", "Owner", "Next follow-up", "Notes"], rows);
   }
 
+  // ---- partner website profile helpers ----
+  function slugify(t) {
+    return String(t || "").toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 60);
+  }
+  function cleanUrl(v) {
+    let s = String(v || "").trim();
+    if (!s) return null;
+    if (!/^https?:\/\//i.test(s)) s = "https://" + s;
+    try {
+      const u = new URL(s);
+      return u.protocol === "http:" || u.protocol === "https:" ? u.href : null;
+    } catch (e) {
+      return null;
+    }
+  }
+  async function uploadPartnerImage(file, slug, kind) {
+    if (!/^image\/(png|jpeg|webp|svg\+xml)$/.test(file.type)) throw new Error("Use a PNG, JPG, WebP or SVG image.");
+    if (file.size > 3 * 1024 * 1024) throw new Error("Image is over 3 MB. Please shrink it first.");
+    const ext = { "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp", "image/svg+xml": "svg" }[file.type];
+    const path = `${slug || "partner"}/${kind}-${Date.now()}.${ext}`;
+    const { error } = await sb.storage.from("partner-media").upload(path, file, { contentType: file.type, upsert: false });
+    if (error) throw error;
+    return sb.storage.from("partner-media").getPublicUrl(path).data.publicUrl;
+  }
+  function thumbHtml(url, wide) {
+    return `<div class="thumb${wide ? " wide" : ""}">${url ? `<img src="${esc(url)}" alt="" />` : "None"}</div>`;
+  }
+
   function openPartner(id) {
     const p = id ? S.partners.find((x) => x.id === id) : null;
-    const v = p || { name: "", category: "sponsor", stage: "lead", contact_name: "", contact_email: "", contact_phone: "", value_usd: "", owner_email: S.me.email, next_follow_up: "", notes: "" };
+    const v = p || { name: "", category: "sponsor", stage: "lead", contact_name: "", contact_email: "", contact_phone: "", value_usd: "", owner_email: S.me.email, next_follow_up: "", notes: "", published: false, featured: false, sort_order: 100, slug: "", tagline: "", description: "", logo_url: "", cover_url: "", website_url: "", instagram_url: "", facebook_url: "", tiktok_url: "", other_url: "", partner_since: "" };
     const body = `
       <form id="pform" class="form-grid" autocomplete="off">
         <div class="full"><label class="f" for="pf-name">Partner name</label><input class="input" id="pf-name" name="name" required maxlength="160" value="${esc(v.name)}" /></div>
@@ -374,6 +402,27 @@
         <div><label class="f">Owner on our team</label><input class="input" type="email" name="owner_email" maxlength="160" value="${esc(v.owner_email)}" /></div>
         <div><label class="f">Next follow-up</label><input class="input" type="date" name="next_follow_up" value="${esc(v.next_follow_up)}" /></div>
         <div class="full"><label class="f">Notes</label><textarea class="textarea" name="notes" maxlength="4000">${esc(v.notes)}</textarea></div>
+        <div class="full sect"><h3>Website profile</h3><div class="sub">What visitors see on the public Partners page. Nothing below is shown until you tick Show on website.</div></div>
+        <div class="full"><label class="check"><input type="checkbox" name="published" ${v.published ? "checked" : ""} /> Show on website</label></div>
+        <div class="full"><label class="check"><input type="checkbox" name="featured" ${v.featured ? "checked" : ""} /> Feature at the top</label></div>
+        <div class="full"><label class="f">Logo</label>
+          <div class="media-row"><div id="logo-prev">${thumbHtml(v.logo_url)}</div>
+          <div style="flex:1"><input class="input" type="file" id="logo-file" accept="image/png,image/jpeg,image/webp,image/svg+xml" />
+          <div class="hint">PNG, JPG, WebP or SVG, up to 3 MB. Transparent PNG looks best. Or paste a link below.</div>
+          <input class="input" name="logo_url" placeholder="https://... (optional image link)" maxlength="500" value="${esc(v.logo_url)}" style="margin-top:6px" /></div></div></div>
+        <div class="full"><label class="f">Cover photo (optional)</label>
+          <div class="media-row"><div id="cover-prev">${thumbHtml(v.cover_url, true)}</div>
+          <div style="flex:1"><input class="input" type="file" id="cover-file" accept="image/png,image/jpeg,image/webp" />
+          <input class="input" name="cover_url" placeholder="https://... (optional image link)" maxlength="500" value="${esc(v.cover_url)}" style="margin-top:6px" /></div></div></div>
+        <div class="full"><label class="f">Tagline</label><input class="input" name="tagline" maxlength="140" placeholder="One line, for example: Matcha bar on Street 240" value="${esc(v.tagline)}" /></div>
+        <div class="full"><label class="f">About this partner</label><textarea class="textarea" name="description" maxlength="2000" placeholder="What they do and how we work together.">${esc(v.description)}</textarea></div>
+        <div><label class="f">Website</label><input class="input" name="website_url" maxlength="300" placeholder="example.com" value="${esc(v.website_url)}" /></div>
+        <div><label class="f">Instagram</label><input class="input" name="instagram_url" maxlength="300" placeholder="instagram.com/..." value="${esc(v.instagram_url)}" /></div>
+        <div><label class="f">Facebook</label><input class="input" name="facebook_url" maxlength="300" placeholder="facebook.com/..." value="${esc(v.facebook_url)}" /></div>
+        <div><label class="f">TikTok</label><input class="input" name="tiktok_url" maxlength="300" placeholder="tiktok.com/@..." value="${esc(v.tiktok_url)}" /></div>
+        <div><label class="f">Other link</label><input class="input" name="other_url" maxlength="300" placeholder="Telegram, Google Maps, menu..." value="${esc(v.other_url)}" /></div>
+        <div><label class="f">Partner since</label><input class="input" type="date" name="partner_since" value="${esc(v.partner_since)}" /></div>
+        <div><label class="f">Display order</label><input class="input" type="number" min="0" max="9999" step="1" name="sort_order" value="${esc(v.sort_order)}" /><div class="hint">Lower numbers show first.</div></div>
       </form>
       ${p ? '<div class="timeline"><h3>Activity</h3><form id="actform" class="act-form"><select class="select" name="kind">' + opts(ACT_KINDS, "note") + '</select><input class="input" name="note" placeholder="What happened?" maxlength="2000" required /><button class="btn small" type="submit">Log</button></form><div id="acts"><div class="empty">Loading...</div></div></div>' : ""}`;
     const foot = `${p && isAdmin() ? '<button class="btn danger" type="button" id="pdel">Delete</button>' : ""}<span class="spacer"></span><button class="btn light" type="button" data-close>Cancel</button><button class="btn" type="submit" form="pform" id="psave">${p ? "Save changes" : "Add partner"}</button>`;
@@ -382,7 +431,22 @@
     $("#pform", m).addEventListener("submit", async (e) => {
       e.preventDefault();
       const fd = new FormData(e.target);
+      const links = {};
+      for (const k of ["website_url", "instagram_url", "facebook_url", "tiktok_url", "other_url"]) {
+        const raw = String(fd.get(k) || "").trim();
+        links[k] = cleanUrl(raw);
+        if (raw && !links[k]) return toast("That link in " + k.replace("_url", "") + " does not look right", true);
+      }
       const row = {
+        ...links,
+        published: fd.get("published") === "on",
+        featured: fd.get("featured") === "on",
+        sort_order: Math.min(9999, Math.max(0, Math.round(num(fd.get("sort_order")) || 100))),
+        tagline: String(fd.get("tagline") || "").trim() || null,
+        description: String(fd.get("description") || "").trim() || null,
+        logo_url: cleanUrl(fd.get("logo_url")),
+        cover_url: cleanUrl(fd.get("cover_url")),
+        partner_since: fd.get("partner_since") || null,
         name: String(fd.get("name") || "").trim(),
         category: fd.get("category"),
         stage: fd.get("stage"),
@@ -397,13 +461,30 @@
       if (!row.name) return toast("Partner name is required", true);
       const btn = $("#psave", m);
       btn.disabled = true;
+      row.slug = (p && p.slug) || slugify(row.name) || null;
+      try {
+        const lf = $("#logo-file", m).files[0];
+        const cf = $("#cover-file", m).files[0];
+        if (lf) row.logo_url = await uploadPartnerImage(lf, row.slug, "logo");
+        if (cf) row.cover_url = await uploadPartnerImage(cf, row.slug, "cover");
+      } catch (err) {
+        btn.disabled = false;
+        return toast(err.message || "Image upload failed", true);
+      }
       const res = p ? await sb.from("partners").update(row).eq("id", p.id) : await sb.from("partners").insert({ ...row, created_by: S.me.email });
       btn.disabled = false;
-      if (res.error) return toast(res.error.message, true);
+      if (res.error) return toast(/partners_slug_key/.test(res.error.message) ? "Another partner already uses a very similar name. Add a word to make it unique." : res.error.message, true);
       toast(p ? "Partner updated" : "Partner added");
       closeModal();
       viewPartners();
     });
+
+    [["#logo-file", "#logo-prev", false], ["#cover-file", "#cover-prev", true]].forEach(([fi, pv, wide]) =>
+      $(fi, m).addEventListener("change", (e) => {
+        const f = e.target.files[0];
+        if (f && /^image\//.test(f.type)) $(pv, m).innerHTML = thumbHtml(URL.createObjectURL(f), wide);
+      })
+    );
 
     if (p) {
       loadActivities(p.id, m);

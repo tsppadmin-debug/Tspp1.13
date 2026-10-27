@@ -241,7 +241,53 @@
               inset: 0;
               background: linear-gradient(180deg, rgba(255,255,255,0.09), transparent 45%, rgba(255,255,255,0.02));
             }
-    </style>
+    
+            /* ---- partner network (database driven) ---- */
+            .partner-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+            @media (min-width: 768px) { .partner-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; } }
+            @media (min-width: 1100px) { .partner-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+            .partner-tab .n { opacity: .55; margin-left: 6px; font-size: .72rem; }
+            .partner-tab:focus-visible, .partner-card:focus-visible, .pd-close:focus-visible, .pd-link:focus-visible, .partner-cta-btn:focus-visible { outline: 2px solid #00A3FF; outline-offset: 3px; }
+            .partner-card { all: unset; box-sizing: border-box; cursor: pointer; position: relative; display: flex; flex-direction: column; background: #fff; border: 1px solid rgba(28,27,27,.07); border-radius: 24px; overflow: hidden; transition: transform 320ms ease, box-shadow 320ms ease, border-color 320ms ease; }
+            .partner-card:hover { transform: translateY(-4px); box-shadow: 0 28px 64px rgba(0,0,0,.08); border-color: rgba(0,0,0,.14); }
+            .partner-card .pc-logo { aspect-ratio: 4 / 3; display: grid; place-items: center; padding: 28px; background: #f7f3f2; }
+            .partner-card .pc-logo img { max-width: 100%; max-height: 100%; object-fit: contain; filter: grayscale(1) opacity(.8); transition: filter 320ms ease, transform 320ms ease; }
+            .partner-card:hover .pc-logo img { filter: none; transform: scale(1.04); }
+            .partner-card .pc-initial { font-size: 2.4rem; font-weight: 700; letter-spacing: .04em; color: #1c1b1b; }
+            .partner-card .pc-copy { padding: 18px 20px 20px; display: grid; gap: 4px; }
+            .partner-card .pc-cat { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: #444748; }
+            .partner-card .pc-name { font-size: 1.15rem; font-weight: 700; line-height: 1.2; color: #1c1b1b; }
+            .partner-card .pc-tag { font-size: .88rem; color: #444748; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+            .partner-card .pc-flag { position: absolute; top: 14px; left: 14px; background: #000; color: #fff; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; padding: 5px 10px; border-radius: 999px; }
+            .partner-skel { aspect-ratio: 4 / 5; border-radius: 24px; background: linear-gradient(90deg,#f1ecea 25%,#f8f4f3 50%,#f1ecea 75%); background-size: 200% 100%; animation: pskel 1.4s linear infinite; }
+            @keyframes pskel { to { background-position: -200% 0; } }
+            .partner-empty { grid-column: 1 / -1; text-align: center; padding: 56px 16px; color: #444748; }
+            .partner-cta { margin-top: 64px; display: flex; flex-wrap: wrap; gap: 24px; align-items: center; justify-content: space-between; padding: 32px; border-radius: 28px; background: #000; color: #fff; }
+            .partner-cta p { color: rgba(255,255,255,.7); }
+            .partner-cta-btn { background: #fff; color: #000; padding: 14px 26px; border-radius: 999px; font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; text-decoration: none; transition: transform 240ms ease; }
+            .partner-cta-btn:hover { transform: translateY(-2px); }
+            .partner-dialog { border: 0; padding: 0; background: transparent; max-width: min(560px, calc(100vw - 32px)); width: 100%; max-height: calc(100vh - 32px); overflow: visible; }
+            .partner-dialog::backdrop { background: rgba(10,10,10,.55); backdrop-filter: blur(4px); }
+            .pd-shell { position: relative; background: #fdf8f8; border-radius: 28px; overflow: hidden; max-height: calc(100vh - 32px); overflow-y: auto; box-shadow: 0 40px 100px rgba(0,0,0,.3); }
+            .pd-close { position: absolute; top: 14px; right: 14px; z-index: 2; width: 40px; height: 40px; border-radius: 999px; border: 0; background: rgba(255,255,255,.92); font-size: 24px; line-height: 1; cursor: pointer; }
+            .pd-cover { height: 180px; background-size: cover; background-position: center; }
+            .pd-body { padding: 28px 28px 32px; }
+            .pd-logo { width: 96px; height: 96px; border-radius: 22px; background: #fff; border: 1px solid rgba(28,27,27,.08); display: grid; place-items: center; padding: 12px; margin-bottom: 18px; }
+            .pd-cover:not([hidden]) + .pd-body .pd-logo { margin-top: -64px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,.1); }
+            .pd-logo img { max-width: 100%; max-height: 100%; object-fit: contain; }
+            .pd-logo span { font-size: 1.8rem; font-weight: 700; }
+            .pd-cat { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #00A3FF; font-weight: 600; }
+            .pd-name { font-size: 1.9rem; font-weight: 700; line-height: 1.1; margin-top: 4px; text-transform: uppercase; letter-spacing: -.02em; }
+            .pd-tag { margin-top: 8px; font-size: 1.05rem; color: #444748; }
+            .pd-desc { margin-top: 16px; line-height: 1.65; color: #1c1b1b; white-space: pre-line; }
+            .pd-since { margin-top: 16px; font-size: .85rem; color: #747878; }
+            .pd-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+            .pd-link { display: inline-flex; gap: 6px; align-items: center; padding: 10px 18px; border-radius: 999px; border: 1px solid rgba(28,27,27,.16); color: #1c1b1b; text-decoration: none; font-size: .85rem; font-weight: 500; transition: background 200ms ease, color 200ms ease; }
+            .pd-link:hover { background: #000; color: #fff; }
+            .pd-link.main { background: #000; color: #fff; }
+            .pd-link.main:hover { background: #00A3FF; border-color: #00A3FF; }
+            @media (prefers-reduced-motion: reduce) { .partner-card, .partner-card .pc-logo img, .partner-skel { transition: none; animation: none; } }
+</style>
 </head>
  <link href="styles.css" rel="stylesheet" />
     <link href="animations.css" rel="stylesheet" />
@@ -372,75 +418,45 @@
   <div class="max-w-container-max mx-auto px-margin-desktop py-12">
     <div class="text-center max-w-3xl mx-auto mb-10">
       <p class="font-label-caps text-label-caps text-secondary mb-4 uppercase tracking-label">Trusted by customers, partners and the industry</p>
-      <h2 class="font-headline-lg text-headline-lg uppercase tracking-tighter">Partner Grid</h2>
+      <h2 class="font-headline-lg text-headline-lg uppercase tracking-tighter">The Network</h2>
       <p class="font-body-md text-body-md text-on-surface-variant mt-5">
-        Explore the community that has supported, sponsored, and collaborated with us. Choose a section to see the network behind THE SOCIAL.
+        The brands, venues and communities that have backed, hosted and built with THE SOCIAL. Tap any partner to see who they are and where to find them.
       </p>
     </div>
 
-    <div class="partner-tabs flex flex-wrap justify-center gap-3 mb-10">
-      <button type="button" class="partner-tab active" data-filter="Brand">Brand</button>
-      <button type="button" class="partner-tab" data-filter="Community">Community</button>
-    </div>
+    <div id="partner-tabs" class="partner-tabs flex flex-wrap justify-center gap-3 mb-4" role="tablist" aria-label="Partner categories"></div>
+    <p id="partner-count" class="text-center text-sm text-on-surface-variant mb-10" aria-live="polite">&nbsp;</p>
 
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 partner-grid" aria-live="polite">
-       <article class="partner-card" data-category="Community">
-  <div class="partner-logo">
-    <img src="https://res.cloudinary.com/dfefliptm/image/upload/v1782476212/180fitness1_xbvrz3.png" alt="180 Fitness logo" class="w-full h-full object-contain" />
-  </div>
-  <div class="partner-copy">
-    <p class="font-label-caps text-[10px] uppercase text-on-surface-variant tracking-label">Community</p>
-    <h3 class="font-headline-md text-headline-md font-bold">180 Fitness</h3>
-  </div>
-</article>
-       <article class="partner-card" data-category="Community">
-  <div class="partner-logo">
-    <img src="https://res.cloudinary.com/dfefliptm/image/upload/v1782476212/ESC1_sqyoyd.png" alt="Umi Matcha logo" class="w-full h-full object-contain" />
-  </div>
-  <div class="partner-copy">
-    <p class="font-label-caps text-[10px] uppercase text-on-surface-variant tracking-label">Community</p>
-    <h3 class="font-headline-md text-headline-md font-bold">Elevate Sports Complex</h3>
-  </div>
-</article>
-      <article class="partner-card" data-category="Brand">
-  <div class="partner-logo">
-    <img src="https://res.cloudinary.com/dfefliptm/image/upload/v1782476211/Umi2_thp9rf.png" alt="Umi Matcha logo" class="w-full h-full object-contain" />
-  </div>
-  <div class="partner-copy">
-    <p class="font-label-caps text-[10px] uppercase text-on-surface-variant tracking-label">Brand</p>
-    <h3 class="font-headline-md text-headline-md font-bold">Umi Matcha</h3>
-  </div>
-</article>
-     <article class="partner-card" data-category="Brand">
-  <div class="partner-logo">
-    <img src="https://res.cloudinary.com/dfefliptm/image/upload/v1782476212/Amra1_uxjbv3.png" alt="Umi Matcha logo" class="w-full h-full object-contain" />
-  </div>
-  <div class="partner-copy">
-    <p class="font-label-caps text-[10px] uppercase text-on-surface-variant tracking-label">Brand</p>
-    <h3 class="font-headline-md text-headline-md font-bold">AMRA</h3>
-  </div>
-</article>
-        <article class="partner-card" data-category="Brand">
-  <div class="partner-logo">
-    <img src="https://res.cloudinary.com/dfefliptm/image/upload/v1782476212/Jiang1_bhdp93.png" alt="Umi Matcha logo" class="w-full h-full object-contain" />
-  </div>
-  <div class="partner-copy">
-    <p class="font-label-caps text-[10px] uppercase text-on-surface-variant tracking-label">Brand</p>
-    <h3 class="font-headline-md text-headline-md font-bold">Jiang Tequila</h3>
-  </div>
-</article>
-<article class="partner-card" data-category="Brand">
-  <div class="partner-logo">
-    <img src="https://res.cloudinary.com/dfefliptm/image/upload/v1782575996/MAIA_Draft1_Transparent_li6ctm.png" alt="Umi Matcha logo" class="w-full h-full object-contain" />
-  </div>
-  <div class="partner-copy">
-    <p class="font-label-caps text-[10px] uppercase text-on-surface-variant tracking-label">Brand</p>
-    <h3 class="font-headline-md text-headline-md font-bold">Maia Bakery</h3>
-  </div>
-</article>
+    <div id="partner-grid" class="partner-grid" aria-live="polite">
+      <div class="partner-skel"></div><div class="partner-skel"></div><div class="partner-skel"></div><div class="partner-skel"></div>
+    </div>
+    <noscript><p class="text-center text-on-surface-variant">Turn on JavaScript to see our partners.</p></noscript>
+
+    <div class="partner-cta">
+      <div>
+        <h3 class="font-headline-md text-headline-md font-bold uppercase tracking-tighter">Want to be in this list?</h3>
+        <p class="text-on-surface-variant mt-2">We build experiences with brands that care about the community. Tell us what you have in mind.</p>
+      </div>
+      <a class="partner-cta-btn" href="mailto:hello@thesocialphnompenh.com?subject=Partnering%20with%20The%20Social">Partner with us</a>
     </div>
   </div>
 </section>
+
+<dialog id="partner-dialog" class="partner-dialog" aria-labelledby="pd-name">
+  <div class="pd-shell">
+    <button type="button" class="pd-close" id="pd-close" aria-label="Close">&times;</button>
+    <div class="pd-cover" id="pd-cover" hidden></div>
+    <div class="pd-body">
+      <div class="pd-logo" id="pd-logo"></div>
+      <p class="pd-cat" id="pd-cat"></p>
+      <h3 class="pd-name" id="pd-name"></h3>
+      <p class="pd-tag" id="pd-tag"></p>
+      <p class="pd-desc" id="pd-desc"></p>
+      <p class="pd-since" id="pd-since"></p>
+      <div class="pd-links" id="pd-links"></div>
+    </div>
+  </div>
+</dialog>
 <!-- Footer -->
     <footer class="bg-surface border-t border-outline-variant/30 py-32">
       <div
@@ -683,63 +699,139 @@
       })();
     </script>
     <div id="transition-overlay" class="transition-overlay"></div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
       (function () {
-        const tabs = document.querySelectorAll('.partner-tab');
-        const cards = document.querySelectorAll('.partner-card');
-        const overlay = document.getElementById('transition-overlay');
+        var sb = window.supabase.createClient(
+          "https://vxamxpmhgkgxwecdycjj.supabase.co",
+          "sb_publishable_CRnwiQGclzMiH7AAlZi0tw_w4bkNp1T",
+          { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } }
+        );
+        var CATS = { sponsor: "Sponsors", venue: "Venues", media: "Media", brand: "Brands", community: "Community", other: "Other" };
+        var COLS = "id,name,category,slug,tagline,description,logo_url,cover_url,website_url,instagram_url,facebook_url,tiktok_url,other_url,partner_since,featured,sort_order";
+        var grid = document.getElementById("partner-grid");
+        var tabsEl = document.getElementById("partner-tabs");
+        var countEl = document.getElementById("partner-count");
+        var dlg = document.getElementById("partner-dialog");
+        var all = [], active = "all", lastFocus = null;
 
-        function showOverlay() {
-          overlay.classList.add('visible');
-          return new Promise((resolve) => setTimeout(resolve, 260));
+        function safeUrl(u) {
+          try { var x = new URL(u); return x.protocol === "https:" || x.protocol === "http:" ? x.href : ""; } catch (e) { return ""; }
+        }
+        function el(tag, cls, text) {
+          var n = document.createElement(tag);
+          if (cls) n.className = cls;
+          if (text != null) n.textContent = text;
+          return n;
+        }
+        function logoNode(p, cls) {
+          var url = safeUrl(p.logo_url);
+          if (url) {
+            var img = document.createElement("img");
+            img.src = url; img.alt = p.name + " logo"; img.loading = "lazy"; img.decoding = "async";
+            return img;
+          }
+          return el("span", cls, (p.name || "?").trim().charAt(0).toUpperCase());
+        }
+        function catLabel(c) { return CATS[c] || "Other"; }
+
+        function drawTabs() {
+          var counts = {};
+          all.forEach(function (p) { counts[p.category] = (counts[p.category] || 0) + 1; });
+          var keys = Object.keys(CATS).filter(function (k) { return counts[k]; });
+          tabsEl.textContent = "";
+          var list = [["all", "All", all.length]].concat(keys.map(function (k) { return [k, CATS[k], counts[k]]; }));
+          list.forEach(function (t) {
+            var b = el("button", "partner-tab" + (t[0] === active ? " active" : ""), t[1]);
+            b.type = "button"; b.setAttribute("role", "tab"); b.setAttribute("aria-selected", t[0] === active);
+            b.appendChild(el("span", "n", String(t[2])));
+            b.addEventListener("click", function () { active = t[0]; drawTabs(); drawGrid(); });
+            tabsEl.appendChild(b);
+          });
+          tabsEl.style.display = keys.length > 1 ? "" : "none";
         }
 
-        function hideOverlay() {
-          overlay.classList.remove('visible');
-          return new Promise((resolve) => setTimeout(resolve, 260));
-        }
-
-        function setActiveTab(filter) {
-          tabs.forEach((tab) => {
-            tab.classList.toggle('active', tab.dataset.filter === filter);
+        function drawGrid() {
+          var list = all.filter(function (p) { return active === "all" || p.category === active; });
+          grid.textContent = "";
+          countEl.textContent = list.length ? list.length + (list.length === 1 ? " partner" : " partners") : "";
+          if (!list.length) {
+            grid.appendChild(el("div", "partner-empty", all.length ? "No partners in this category yet." : "Our partner list is being updated. Check back soon."));
+            return;
+          }
+          list.forEach(function (p) {
+            var card = el("button", "partner-card");
+            card.type = "button";
+            card.setAttribute("aria-label", "View " + p.name);
+            if (p.featured) card.appendChild(el("span", "pc-flag", "Featured"));
+            var logo = el("div", "pc-logo");
+            logo.appendChild(logoNode(p, "pc-initial"));
+            card.appendChild(logo);
+            var copy = el("div", "pc-copy");
+            copy.appendChild(el("span", "pc-cat", catLabel(p.category)));
+            copy.appendChild(el("span", "pc-name", p.name));
+            if (p.tagline) copy.appendChild(el("span", "pc-tag", p.tagline));
+            card.appendChild(copy);
+            card.addEventListener("click", function () { openPartner(p, true); });
+            grid.appendChild(card);
           });
         }
 
-        function filterCards(filter) {
-          cards.forEach((card) => {
-            const categories = card.dataset.category.split(' ');
-            const visible = categories.includes(filter);
-            card.style.display = visible ? '' : 'none';
-            card.style.opacity = visible ? '1' : '0';
-            card.style.pointerEvents = visible ? 'auto' : 'none';
-            card.style.transform = visible ? 'translateY(0)' : 'translateY(12px)';
-          });
+        function linkBtn(href, label, icon, main) {
+          var u = safeUrl(href);
+          if (!u) return null;
+          var a = el("a", "pd-link" + (main ? " main" : ""));
+          a.href = u; a.target = "_blank"; a.rel = "noopener noreferrer";
+          var ic = el("span", "material-symbols-outlined", icon);
+          ic.style.fontSize = "18px"; ic.setAttribute("aria-hidden", "true");
+          a.appendChild(ic); a.appendChild(document.createTextNode(label));
+          return a;
         }
 
-        async function applyFilter(filter) {
-          await showOverlay();
-          setActiveTab(filter);
-          filterCards(filter);
-          await hideOverlay();
-          history.replaceState(null, '', '#partner-network');
-          const section = document.getElementById('partner-network');
-          section && section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        function openPartner(p, push) {
+          lastFocus = document.activeElement;
+          var cover = document.getElementById("pd-cover");
+          var cu = safeUrl(p.cover_url);
+          if (cu) { cover.style.backgroundImage = "url(\"" + cu.replace(/"/g, "%22") + "\")"; cover.hidden = false; } else { cover.hidden = true; cover.style.backgroundImage = ""; }
+          var lg = document.getElementById("pd-logo"); lg.textContent = ""; lg.appendChild(logoNode(p, ""));
+          document.getElementById("pd-cat").textContent = catLabel(p.category);
+          document.getElementById("pd-name").textContent = p.name;
+          var tag = document.getElementById("pd-tag"); tag.textContent = p.tagline || ""; tag.style.display = p.tagline ? "" : "none";
+          var d = document.getElementById("pd-desc"); d.textContent = p.description || ""; d.style.display = p.description ? "" : "none";
+          var since = document.getElementById("pd-since");
+          if (p.partner_since) {
+            var yr = new Date(p.partner_since + "T00:00:00").getFullYear();
+            since.textContent = isNaN(yr) ? "" : "Partner since " + yr;
+          } else since.textContent = "";
+          since.style.display = since.textContent ? "" : "none";
+          var links = document.getElementById("pd-links"); links.textContent = "";
+          [linkBtn(p.website_url, "Website", "language", true), linkBtn(p.instagram_url, "Instagram", "photo_camera"), linkBtn(p.facebook_url, "Facebook", "group"), linkBtn(p.tiktok_url, "TikTok", "music_note"), linkBtn(p.other_url, "More", "open_in_new")]
+            .forEach(function (n) { if (n) links.appendChild(n); });
+          if (!dlg.open) dlg.showModal();
+          if (push && p.slug) history.replaceState(null, "", "#" + p.slug);
         }
-
-        tabs.forEach((tab) => {
-          tab.addEventListener('click', () => {
-            const filter = tab.dataset.filter;
-            applyFilter(filter);
-          });
+        function closeDlg() { if (dlg.open) dlg.close(); }
+        dlg.addEventListener("close", function () {
+          if (location.hash && location.hash !== "#partner-network") history.replaceState(null, "", location.pathname + location.search);
+          if (lastFocus && lastFocus.focus) lastFocus.focus();
         });
+        dlg.addEventListener("click", function (e) { if (e.target === dlg) closeDlg(); });
+        document.getElementById("pd-close").addEventListener("click", closeDlg);
 
-        const hash = window.location.hash.replace('#', '');
-        const initialFilter = ['customers', 'certifications', 'partners', 'technologies', 'credits'].includes(hash)
-          ? hash
-          : 'customers';
-
-        setActiveTab(initialFilter);
-        filterCards(initialFilter);
+        sb.from("partners").select(COLS).eq("published", true)
+          .order("featured", { ascending: false }).order("sort_order", { ascending: true }).order("name", { ascending: true })
+          .then(function (res) {
+            if (res.error) {
+              grid.textContent = "";
+              grid.appendChild(el("div", "partner-empty", "We could not load the partner list. Please refresh the page."));
+              return;
+            }
+            all = res.data || [];
+            drawTabs(); drawGrid();
+            var h = decodeURIComponent((location.hash || "").slice(1));
+            var hit = h && all.filter(function (p) { return p.slug === h; })[0];
+            if (hit) openPartner(hit, false);
+          });
       })();
     </script>
   </body>
