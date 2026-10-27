@@ -533,19 +533,6 @@ button {
     height: 300px !important;
   }
 
-  .coming-soon-page .min-h-\[480px\],
-  .coming-soon-page .md\:min-h-\[620px\] {
-    min-height: 420px !important;
-  }
-
-  .coming-soon-page .absolute.bottom-3.right-0 {
-    right: 12px !important;
-    bottom: 0 !important;
-    max-width: 180px !important;
-    background: rgb(251 247 245 / 0.82);
-    backdrop-filter: blur(10px);
-  }
-
   .coming-marquee {
     width: 260% !important;
   }
