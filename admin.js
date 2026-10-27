@@ -117,7 +117,7 @@
     $("#login-error").textContent = "";
     const { error } = await sb.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: location.origin + location.pathname, queryParams: { prompt: "select_account" } },
+      options: { redirectTo: location.origin + "/admin.html", queryParams: { prompt: "select_account" } },
     });
     if (error) $("#login-error").textContent = error.message;
   }

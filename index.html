@@ -1,6 +1,11 @@
 <!doctype html>
 <html class="light" lang="en">
   <head>
+    <script>
+      /* If a Google sign-in lands here by mistake, hand it to the admin page */
+      (function(){var q=location.search;if(/[?&](code|error_description|error_code)=/.test(q)&&/sb-.*-auth-token-code-verifier/.test(Object.keys(localStorage).join(" "))){location.replace("/admin.html"+q+location.hash);}})();
+    </script>
+
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>THE SOCIAL PHNOM PENH | Community is Culture</title>
