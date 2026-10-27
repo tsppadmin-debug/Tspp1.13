@@ -5,6 +5,22 @@
 <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<script>
+  /* Pick the collection before first paint: saved choice, else the visitor's device setting */
+  (function () {
+    var col = "";
+    try { col = localStorage.getItem("gallery-collection") || ""; } catch (e) {}
+    if (location.hash === "#wednesday" || location.hash === "#saturday") col = location.hash.slice(1);
+    if (col !== "wednesday" && col !== "saturday") {
+      col = window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "wednesday" : "saturday";
+    }
+    window.__galleryCol = col;
+    var h = document.documentElement;
+    h.classList.remove("light", "dark");
+    h.classList.add(col === "wednesday" ? "dark" : "light");
+  })();
+</script>
+<link rel="preconnect" href="https://res.cloudinary.com" crossorigin>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&amp;display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
@@ -234,6 +250,58 @@
         html, body, nav, section, footer, button, .gallery-card, #gallery-modal {
             transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
+
+        /* ---- gallery (database driven) ---- */
+        .gal-switch { display: inline-grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 6px; border-radius: 999px; background: rgba(28,27,27,.06); max-width: 100%; }
+        html.dark .gal-switch { background: rgba(255,255,255,.08); }
+        .gal-opt { all: unset; box-sizing: border-box; cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 12px 26px 12px 18px; border-radius: 999px; color: inherit; transition: background 260ms ease, color 260ms ease, box-shadow 260ms ease; }
+        .gal-opt:focus-visible, .lb-btn:focus-visible, .gal-tile:focus-visible, .gal-more:focus-visible { outline: 2px solid #00A3FF; outline-offset: 3px; }
+        .gal-opt .material-symbols-outlined { font-size: 24px; }
+        .gal-opt-copy { display: grid; line-height: 1.15; text-align: left; }
+        .gal-opt-copy strong { font-size: .95rem; font-weight: 600; letter-spacing: .02em; }
+        .gal-opt-copy small { font-size: .72rem; opacity: .65; letter-spacing: .06em; text-transform: uppercase; }
+        .gal-opt[aria-selected="true"] { background: #000; color: #fff; box-shadow: 0 10px 30px rgba(0,0,0,.18); }
+        html.dark .gal-opt[aria-selected="true"] { background: #f4f0ef; color: #0d0d0d; }
+        .gal-count { margin-top: 14px; font-size: .85rem; opacity: .65; }
+        .gal-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+        @media (min-width: 768px) { .gal-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; } }
+        @media (min-width: 1100px) { .gal-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+        .gal-tile { all: unset; box-sizing: border-box; position: relative; cursor: zoom-in; display: block; aspect-ratio: 4 / 5; border-radius: 18px; overflow: hidden; background: #e9e4e2; transition: transform 320ms ease, box-shadow 320ms ease; }
+        html.dark .gal-tile { background: #242424; }
+        .gal-tile img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 600ms ease, opacity 400ms ease; }
+        .gal-tile:hover { transform: translateY(-3px); box-shadow: 0 24px 56px rgba(0,0,0,.18); }
+        .gal-tile:hover img { transform: scale(1.05); }
+        .gal-tile .gt-cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 40px 16px 14px; color: #fff; background: linear-gradient(transparent, rgba(0,0,0,.72)); display: grid; gap: 2px; opacity: 0; transform: translateY(6px); transition: opacity 280ms ease, transform 280ms ease; }
+        .gal-tile:hover .gt-cap, .gal-tile:focus-visible .gt-cap { opacity: 1; transform: none; }
+        @media (hover: none) { .gal-tile .gt-cap { opacity: 1; transform: none; } }
+        .gt-tag { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; opacity: .75; }
+        .gt-title { font-size: 1rem; font-weight: 600; }
+        .gal-skel { aspect-ratio: 4 / 5; border-radius: 18px; background: linear-gradient(90deg,#efe9e7 25%,#f7f3f2 50%,#efe9e7 75%); background-size: 200% 100%; animation: galskel 1.4s linear infinite; }
+        html.dark .gal-skel { background: linear-gradient(90deg,#1b1b1b 25%,#262626 50%,#1b1b1b 75%); background-size: 200% 100%; }
+        @keyframes galskel { to { background-position: -200% 0; } }
+        .gal-empty { grid-column: 1 / -1; text-align: center; padding: 72px 16px; opacity: .7; }
+        .gal-more-wrap { display: flex; justify-content: center; margin-top: 40px; }
+        .gal-more { all: unset; box-sizing: border-box; cursor: pointer; padding: 14px 30px; border-radius: 999px; border: 1px solid currentColor; font-size: .8rem; letter-spacing: .1em; text-transform: uppercase; }
+        .gal-more:hover { background: #000; color: #fff; }
+        html.dark .gal-more:hover { background: #f4f0ef; color: #0d0d0d; }
+        .gal-more[hidden] { display: none; }
+        .lightbox { border: 0; padding: 0; background: transparent; max-width: 100vw; max-height: 100vh; width: 100vw; height: 100vh; }
+        .lightbox::backdrop { background: rgba(8,8,8,.92); }
+        .lb-fig { margin: 0; height: 100%; display: grid; grid-template-rows: 1fr auto; justify-items: center; align-items: center; padding: 56px 72px 28px; gap: 14px; }
+        .lb-fig img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 10px; }
+        .lb-fig figcaption { color: #fff; text-align: center; font-size: .95rem; min-height: 1.4em; }
+        .lb-btn { all: unset; box-sizing: border-box; position: absolute; z-index: 2; width: 48px; height: 48px; border-radius: 999px; background: rgba(255,255,255,.14); color: #fff; display: grid; place-items: center; cursor: pointer; font-size: 28px; line-height: 1; }
+        .lb-btn:hover { background: rgba(255,255,255,.28); }
+        .lb-close { top: 16px; right: 16px; }
+        .lb-prev { left: 12px; top: 50%; transform: translateY(-50%); }
+        .lb-next { right: 12px; top: 50%; transform: translateY(-50%); }
+        @media (max-width: 640px) { .lb-fig { padding: 64px 12px 24px; } .lb-prev, .lb-next { top: auto; bottom: 12px; transform: none; } .lb-prev { left: 16px; } .lb-next { right: 16px; } }
+        /* dark mode: carry the theme through the page chrome */
+        html.dark nav { background-color: rgba(13,13,13,.92); }
+        html.dark nav a, html.dark nav button, html.dark nav span { color: #f4f0ef; }
+        html.dark .text-on-surface-variant { color: #b9b4b2; }
+        html.dark footer { background-color: #0d0d0d; border-color: rgba(255,255,255,.1); }
+        @media (prefers-reduced-motion: reduce) { .gal-tile, .gal-tile img, .gal-skel, .gal-opt { transition: none; animation: none; } }
 </style>
 </head>
 <body class="font-body-md" id="main-body">
@@ -343,124 +411,50 @@
       </div>
     </nav>
 <main class="pt-[100px] pb-2xl">
-<!-- Live Feed Status Section -->
-<section class="px-lg md:px-2xl mb-xl flex flex-col md:flex-row md:items-end justify-between gap-md">
+<section class="px-lg md:px-2xl mb-lg flex flex-col md:flex-row md:items-end justify-between gap-md">
 <div>
 <div class="flex items-center gap-sm mb-xs">
 <span class="w-3 h-3 bg-[#00A3FF] rounded-full live-indicator shadow-[0_0_10px_#00A3FF]"></span>
-<span class="font-label-sm text-label-sm text-[#00A3FF] uppercase tracking-widest">Live Documentary Feed</span>
+<span id="gal-kicker" class="font-label-sm text-label-sm text-[#00A3FF] uppercase tracking-widest">Live Documentary Feed</span>
 </div>
 <h2 class="font-headline-lg text-headline-lg uppercase leading-none dark:text-surface-bright">Phnom Penh <br/>2.0 Series</h2>
 </div>
 <div class="md:text-right max-w-sm">
 <p class="font-body-md text-body-md text-on-surface-variant dark:text-outline-variant italic">
-Capturing the highlights of each events                </p>
-</div>
-</section>
-<!-- Bento Architectural Grid -->
-<section class="px-lg md:px-2xl grid grid-cols-1 md:grid-cols-12 gap-base auto-rows-[280px]">
-<div class="md:col-span-8 md:row-span-2 relative overflow-hidden group kinetic-scroll-item rounded-lg gallery-card cursor-pointer transition-all duration-300 hover:shadow-lg dark:hover:shadow-lg dark:hover:shadow-secondary/20" data-gallery-id="hero1">
-<img src="https://res.cloudinary.com/dfefliptm/image/upload/v1782616954/Jiangnightgroup1_szzqnj.jpg" alt="The Social community gathering" class="w-full h-full object-cover gallery-image" loading="lazy" />
-<div class="absolute inset-0 noir-gradient flex flex-col justify-end p-lg">
-<span class="font-label-sm text-label-sm bg-secondary text-white px-base py-xs mb-sm inline-block w-fit">FEATURED</span>
-<h3 class="text-white font-headline-md text-headline-md leading-tight">Front Row Energy</h3>
-</div>
-</div>
-
-<div class="md:col-span-4 md:row-span-3 relative overflow-hidden group kinetic-scroll-item rounded-lg gallery-card cursor-pointer transition-all duration-300 hover:shadow-lg dark:hover:shadow-lg dark:hover:shadow-secondary/20" data-gallery-id="portrait1">
-<img src="https://res.cloudinary.com/dfefliptm/image/upload/v1782616955/charity_sejruo.jpg" alt="Friends at a Social event" class="w-full h-full object-cover gallery-image" loading="lazy" />
-<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
-<div class="absolute bottom-lg left-lg right-lg">
-<span class="font-label-sm text-label-sm text-white/70 uppercase tracking-widest">People</span>
-<h3 class="text-white font-headline-md text-headline-md">The Girls</h3>
-</div>
-</div>
-
-<div class="md:col-span-4 md:row-span-2 relative overflow-hidden group kinetic-scroll-item rounded-lg gallery-card cursor-pointer transition-all duration-300 hover:shadow-lg dark:hover:shadow-lg dark:hover:shadow-secondary/20" data-gallery-id="square1">
-<img src="https://res.cloudinary.com/dfefliptm/image/upload/v1782616955/umimatcha3_woguof.jpg" alt="Umi Matcha gathering" class="w-full h-full object-cover gallery-image" loading="lazy" />
-<div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent"></div>
-<div class="absolute bottom-md left-md right-md">
-<span class="font-label-sm text-label-sm text-white/70 uppercase">Cafe Night</span>
-<h3 class="text-white font-headline-md text-headline-md">Umi Matcha</h3>
-</div>
-</div>
-
-<div class="md:col-span-4 md:row-span-1 relative overflow-hidden group kinetic-scroll-item rounded-lg gallery-card cursor-pointer transition-all duration-300 hover:shadow-lg dark:hover:shadow-secondary/20" data-gallery-id="text1">
-<img src="https://res.cloudinary.com/dfefliptm/image/upload/v1782616952/kirirom1_wmdpbl.jpg" alt="Candid side shot at The Social" class="w-full h-full object-cover gallery-image" loading="lazy" />
-<div class="absolute inset-0 bg-gradient-to-r from-black/75 to-black/10 p-lg flex flex-col justify-center">
-<p class="font-label-sm text-label-sm text-white/70 mb-xs uppercase tracking-widest"></p>
-<p class="font-body-md text-body-md text-white font-bold leading-tight"></p>
-</div>
-</div>
-
-<div class="md:col-span-4 md:row-span-2 relative overflow-hidden group kinetic-scroll-item rounded-lg gallery-card cursor-pointer transition-all duration-300 hover:shadow-lg dark:hover:shadow-lg dark:hover:shadow-secondary/20" data-gallery-id="portrait2">
-<img src="https://res.cloudinary.com/dfefliptm/image/upload/v1782616952/frontshot_jrkynt.jpg" alt="Le Club Social gathering" class="w-full h-full object-cover gallery-image" loading="lazy" />
-<div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent"></div>
-<div class="absolute bottom-lg left-lg right-lg">
-<span class="font-label-sm text-label-sm text-white/70 uppercase">Night Out</span>
-<h3 class="text-white font-headline-md text-headline-md leading-none">Le Club</h3>
-</div>
-</div>
-
-<div class="md:col-span-8 md:row-span-2 relative overflow-hidden group kinetic-scroll-item rounded-lg gallery-card cursor-pointer transition-all duration-300 hover:shadow-lg dark:hover:shadow-lg dark:hover:shadow-secondary/20" data-gallery-id="landscape1">
-<img src="https://res.cloudinary.com/dfefliptm/image/upload/v1782616954/theoscialnight_fdb7eu.jpg" alt="Jiang movie night group photo" class="w-full h-full object-cover gallery-image" loading="lazy" />
-<div class="absolute inset-0 noir-gradient"></div>
-<div class="absolute top-lg left-lg">
-<div class="bg-white/10 backdrop-blur-md px-md py-xs rounded flex items-center gap-xs">
-<span class="material-symbols-outlined text-white text-sm">photo_camera</span>
-<span class="font-label-sm text-label-sm text-white uppercase">Group Memory</span>
-</div>
-</div>
-<div class="absolute bottom-lg left-lg">
-<h3 class="text-white font-headline-lg text-headline-lg">Movie Night</h3>
-</div>
-</div>
-
-<div class="md:col-span-3 md:row-span-2 relative overflow-hidden group kinetic-scroll-item rounded-lg gallery-card cursor-pointer transition-all duration-300 hover:shadow-lg dark:hover:shadow-lg dark:hover:shadow-secondary/20" data-gallery-id="card7">
-<img src="https://res.cloudinary.com/dfefliptm/image/upload/v1782616952/Ascaro1_wurbee.jpg" alt="Ascaro community event" class="w-full h-full object-cover gallery-image" loading="lazy" />
-<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
-<div class="absolute bottom-md left-md right-md">
-<span class="font-label-sm text-label-sm text-white/70 uppercase">Ascaro</span>
-<h3 class="text-white font-headline-md text-headline-md">Court Side</h3>
-</div>
-</div>
-
-<div class="md:col-span-3 md:row-span-2 relative overflow-hidden group kinetic-scroll-item rounded-lg gallery-card cursor-pointer transition-all duration-300 hover:shadow-lg dark:hover:shadow-lg dark:hover:shadow-secondary/20" data-gallery-id="card8">
-<img src="https://res.cloudinary.com/dfefliptm/image/upload/v1782616956/yoga2_tvvpwz.jpg" alt="Yoga and wellness gathering" class="w-full h-full object-cover gallery-image" loading="lazy" />
-<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
-<div class="absolute bottom-md left-md right-md">
-<span class="font-label-sm text-label-sm text-white/70 uppercase">Wellness</span>
-<h3 class="text-white font-headline-md text-headline-md">Yoga Session</h3>
-</div>
-</div>
-
-<div class="md:col-span-3 md:row-span-2 relative overflow-hidden group kinetic-scroll-item rounded-lg gallery-card cursor-pointer transition-all duration-300 hover:shadow-lg dark:hover:shadow-lg dark:hover:shadow-secondary/20" data-gallery-id="card9">
-<img src="https://res.cloudinary.com/dfefliptm/image/upload/v1782890391/DSC04936_olarkq.jpg" alt="Trail Run at Koh Dach" class="w-full h-full object-cover gallery-image" loading="lazy" />
-<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
-<div class="absolute bottom-md left-md right-md">
-<span class="font-label-sm text-label-sm text-white/70 uppercase">Outdoor</span>
-<h3 class="text-white font-headline-md text-headline-md">Kirirom Hike</h3>
-</div>
-</div>
-
-<div class="md:col-span-3 md:row-span-2 relative overflow-hidden group kinetic-scroll-item rounded-lg gallery-card cursor-pointer transition-all duration-300 hover:shadow-lg dark:hover:shadow-lg dark:hover:shadow-secondary/20" data-gallery-id="card10">
-<img src="https://res.cloudinary.com/dfefliptm/image/upload/v1782616975/merch_fao3yx.jpg" alt="Sabay bowling night" class="w-full h-full object-cover gallery-image" loading="lazy" />
-<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
-<div class="absolute bottom-md left-md right-md">
-<span class="font-label-sm text-label-sm text-white/70 uppercase">Games</span>
-<h3 class="text-white font-headline-md text-headline-md">Bowling Night</h3>
-</div>
+Capturing the highlights of each event
+</p>
 </div>
 </section>
 
-<!-- Modal Content -->
+<section class="px-lg md:px-2xl mb-xl">
+  <div class="gal-switch" role="tablist" aria-label="Gallery collection">
+    <button type="button" role="tab" class="gal-opt" data-col="saturday" id="opt-saturday">
+      <span class="material-symbols-outlined" aria-hidden="true">light_mode</span>
+      <span class="gal-opt-copy"><strong>Social Saturday</strong><small>Daytime events</small></span>
+    </button>
+    <button type="button" role="tab" class="gal-opt" data-col="wednesday" id="opt-wednesday">
+      <span class="material-symbols-outlined" aria-hidden="true">dark_mode</span>
+      <span class="gal-opt-copy"><strong>Wednesday Night</strong><small>After dark</small></span>
+    </button>
+  </div>
+  <p id="gal-count" class="gal-count" aria-live="polite">&nbsp;</p>
+</section>
 
-<div>
-
-</div>
-<!-- Interaction Trigger: Load More -->
-
+<section class="px-lg md:px-2xl">
+  <div id="gal-grid" class="gal-grid" aria-live="polite">
+    <div class="gal-skel"></div><div class="gal-skel"></div><div class="gal-skel"></div><div class="gal-skel"></div>
+  </div>
+  <div class="gal-more-wrap"><button type="button" id="gal-more" class="gal-more" hidden>Show more photos</button></div>
+  <noscript><p class="text-center text-on-surface-variant">Turn on JavaScript to see the gallery.</p></noscript>
+</section>
 </main>
+
+<dialog id="lightbox" class="lightbox" aria-label="Photo viewer">
+  <button type="button" class="lb-btn lb-close" id="lb-close" aria-label="Close">&times;</button>
+  <button type="button" class="lb-btn lb-prev" id="lb-prev" aria-label="Previous photo"><span class="material-symbols-outlined" aria-hidden="true">chevron_left</span></button>
+  <button type="button" class="lb-btn lb-next" id="lb-next" aria-label="Next photo"><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></button>
+  <figure class="lb-fig"><img id="lb-img" alt="" /><figcaption id="lb-cap"></figcaption></figure>
+</dialog>
     <!-- Footer -->
     <footer class="bg-surface border-t border-outline-variant/30 py-32">
       <div
@@ -807,138 +801,119 @@ Capturing the highlights of each events                </p>
           if (e.key === 'Escape' && isOpen) closeMenu();
         });
       })();
-    </script>    <script>
-      
-      // Gallery Card Modal
-      (function() {
-        const modal = document.getElementById('gallery-modal');
-        const closeBtn = document.getElementById('close-modal');
-        const galleryCards = document.querySelectorAll('.gallery-card');
-        
-        const galleryData = {
-          hero1: {
-            title: 'F',
-            image: 'static/frontshot.jpg',
-            metadata: 'Community highlight',
-            location: 'The Social Phnom Penh',
-            description: 'We also do Yoga.',
-            timestamp: 'Archive selection'
-          },
-          portrait1: {
-            title: 'The Girls',
-            image: 'static/Thegirls.jpg',
-            metadata: 'People and community',
-            location: 'Phnom Penh',
-            description: '4/6 of the Social Board .',
-            timestamp: 'Archive selection'
-          },
-          square1: {
-            title: 'Umi Matcha',
-            image: 'static/umimatcha3.jpg',
-            metadata: 'Cafe gathering',
-            location: 'Umi Matcha',
-            description: 'We like to whisk matcha also.',
-            timestamp: 'Archive selection'
-          },
-          text1: {
-            title: 'Side Shot',
-            image: 'static/sideshot.jpg',
-            metadata: 'Candid detail',
-            location: 'The Social Phnom Penh',
-            description: 'A small in-between frame.',
-            timestamp: 'Archive selection'
-          },
-          portrait2: {
-            title: 'Le Club',
-            image: 'static/leclub1.jpg',
-            metadata: 'Night archive',
-            location: 'Le Club',
-            description: 'we also do climbing.',
-            timestamp: 'Archive selection'
-          },
-          landscape1: {
-            title: 'Movie Night',
-            image: 'static/Jiangnightgroup1.jpg',
-            metadata: 'Group memory',
-            location: 'Jiang Movie Night',
-            description: 'Movie Night at Sabay.',
-            timestamp: 'Archive selection'
-          },
-          card7: {
-            title: 'Court Side',
-            image: 'static/Ascaro.jpg',
-            metadata: 'Sports and community',
-            location: 'Ascaro',
-            description: 'Community Pickleball session .',
-            timestamp: 'Archive selection'
-          },
-          card8: {
-            title: 'Yoga Session',
-            image: 'static/yoga2.jpg',
-            metadata: 'Wellness gathering',
-            location: 'Phnom Penh',
-            description: 'Yoga.',
-            timestamp: 'Archive selection'
-          },
-          card9: {
-            title: 'Kirirom Hike',
-            image: 'static/kirirom1.jpg',
-            metadata: 'Outdoor community',
-            location: 'Kirirom',
-            description: 'Out of the city.',
-            timestamp: 'Archive selection'
-          },
-          card10: {
-            title: 'Bowling Night',
-            image: 'static/sabaybowlingnight.JPG',
-            metadata: 'Games and gathering',
-            location: 'Sabay Bowling',
-            description: 'Rolling ball.',
-            timestamp: 'Archive selection'
-          }
-        };
-        
-        galleryCards.forEach(card => {
-          card.addEventListener('click', () => {
-            const id = card.getAttribute('data-gallery-id');
-            const data = galleryData[id];
-            
-            if (data) {
-              document.getElementById('modal-title').textContent = data.title;
-              document.getElementById('modal-image').src = data.image;
-              document.getElementById('modal-image').alt = data.title;
-              document.getElementById('modal-metadata').textContent = data.metadata;
-              document.getElementById('modal-location').textContent = data.location;
-              document.getElementById('modal-description').textContent = data.description;
-              document.getElementById('modal-timestamp').textContent = data.timestamp;
-              
-              modal.classList.remove('hidden');
-              modal.classList.add('active');
-              document.body.style.overflow = 'hidden';
-            }
-          });
-        });
+    </script>    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+      (function () {
+        var sb = window.supabase.createClient(
+          "https://vxamxpmhgkgxwecdycjj.supabase.co",
+          "sb_publishable_CRnwiQGclzMiH7AAlZi0tw_w4bkNp1T",
+          { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } }
+        );
+        var PAGE = 24;
+        var NAMES = { saturday: "Social Saturday", wednesday: "Wednesday Night" };
+        var KICKER = { saturday: "The Social Saturday", wednesday: "The Social Wednesday Night" };
+        var all = [], col = window.__galleryCol || "saturday", shown = PAGE, view = [], at = 0, lastFocus = null;
+        var grid = document.getElementById("gal-grid");
+        var countEl = document.getElementById("gal-count");
+        var moreBtn = document.getElementById("gal-more");
+        var lb = document.getElementById("lightbox");
 
-        function closeModal() {
-          modal.classList.remove('active');
-          document.body.style.overflow = '';
-          setTimeout(() => modal.classList.add('hidden'), 300);
+        function el(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
+        function safe(u) { try { var x = new URL(u); return x.protocol === "https:" ? x.href : ""; } catch (e) { return ""; } }
+        // Ask Cloudinary for a small optimized copy (f_auto picks WebP or AVIF, q_auto picks quality)
+        function cl(u, w) {
+          var m = /^(https:\/\/res\.cloudinary\.com\/[^\/]+\/image\/upload\/)(.+)$/.exec(u);
+          return m ? m[1] + "f_auto,q_auto,c_limit,w_" + w + "/" + m[2] : u;
         }
 
-        closeBtn.addEventListener('click', closeModal);
-        
-        modal.addEventListener('click', (e) => {
-          if (e.target === modal) {
-            closeModal();
+        function applyTheme() {
+          var h = document.documentElement;
+          h.classList.remove("light", "dark");
+          h.classList.add(col === "wednesday" ? "dark" : "light");
+          ["saturday", "wednesday"].forEach(function (k) {
+            var b = document.getElementById("opt-" + k);
+            b.setAttribute("aria-selected", k === col ? "true" : "false");
+            b.tabIndex = k === col ? 0 : -1;
+          });
+          document.getElementById("gal-kicker").textContent = KICKER[col];
+        }
+
+        function draw() {
+          view = all.filter(function (p) { return p.collection === col; });
+          grid.textContent = "";
+          if (!view.length) {
+            grid.appendChild(el("div", "gal-empty", NAMES[col] + " photos are coming soon."));
+            countEl.textContent = ""; moreBtn.hidden = true; return;
           }
+          countEl.textContent = view.length + (view.length === 1 ? " photo" : " photos") + " from " + NAMES[col];
+          view.slice(0, shown).forEach(function (p, i) {
+            var t = el("button", "gal-tile");
+            t.type = "button";
+            t.setAttribute("aria-label", "Open photo" + (p.caption ? ": " + p.caption : ""));
+            var img = document.createElement("img");
+            img.src = cl(safe(p.image_url), 640);
+            img.alt = p.alt_text || p.caption || "Photo from " + NAMES[col];
+            img.loading = i < 4 ? "eager" : "lazy"; img.decoding = "async";
+            t.appendChild(img);
+            if (p.caption || p.tag) {
+              var c = el("span", "gt-cap");
+              if (p.tag) c.appendChild(el("span", "gt-tag", p.tag));
+              if (p.caption) c.appendChild(el("span", "gt-title", p.caption));
+              t.appendChild(c);
+            }
+            t.addEventListener("click", function () { openLb(i); });
+            grid.appendChild(t);
+          });
+          moreBtn.hidden = shown >= view.length;
+        }
+
+        function setCol(next, save) {
+          if (next === col) return;
+          col = next; shown = PAGE;
+          if (save) { try { localStorage.setItem("gallery-collection", col); } catch (e) {} history.replaceState(null, "", "#" + col); }
+          applyTheme(); draw();
+        }
+        ["saturday", "wednesday"].forEach(function (k) {
+          var b = document.getElementById("opt-" + k);
+          b.addEventListener("click", function () { setCol(k, true); });
+          b.addEventListener("keydown", function (e) {
+            if (e.key === "ArrowLeft" || e.key === "ArrowRight") { var o = k === "saturday" ? "wednesday" : "saturday"; setCol(o, true); document.getElementById("opt-" + o).focus(); }
+          });
         });
-        
-        // Close on Escape key
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape' && modal.classList.contains('active')) {
-            closeModal();
-          }
-        });
+        moreBtn.addEventListener("click", function () { shown += PAGE; draw(); });
+
+        function openLb(i) {
+          lastFocus = document.activeElement; at = i; showLb();
+          if (!lb.open) lb.showModal();
+        }
+        function showLb() {
+          var p = view[at]; if (!p) return;
+          var img = document.getElementById("lb-img");
+          img.src = cl(safe(p.image_url), 1800);
+          img.alt = p.alt_text || p.caption || "";
+          document.getElementById("lb-cap").textContent = [p.tag, p.caption].filter(Boolean).join("  ·  ");
+          document.getElementById("lb-prev").style.visibility = view.length > 1 ? "" : "hidden";
+          document.getElementById("lb-next").style.visibility = view.length > 1 ? "" : "hidden";
+          var nxt = view[(at + 1) % view.length]; if (nxt) { var pre = new Image(); pre.src = cl(safe(nxt.image_url), 1800); }
+        }
+        function step(d) { if (!view.length) return; at = (at + d + view.length) % view.length; showLb(); }
+        document.getElementById("lb-prev").addEventListener("click", function () { step(-1); });
+        document.getElementById("lb-next").addEventListener("click", function () { step(1); });
+        document.getElementById("lb-close").addEventListener("click", function () { lb.close(); });
+        lb.addEventListener("click", function (e) { if (e.target === lb) lb.close(); });
+        lb.addEventListener("keydown", function (e) { if (e.key === "ArrowLeft") step(-1); if (e.key === "ArrowRight") step(1); });
+        lb.addEventListener("close", function () { if (lastFocus && lastFocus.focus) lastFocus.focus(); });
+        var tx = null;
+        lb.addEventListener("touchstart", function (e) { tx = e.touches[0].clientX; }, { passive: true });
+        lb.addEventListener("touchend", function (e) { if (tx == null) return; var dx = e.changedTouches[0].clientX - tx; if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1); tx = null; });
+
+        applyTheme();
+        sb.from("gallery_photos").select("id,collection,image_url,alt_text,caption,tag,sort_order,created_at").eq("published", true)
+          .order("sort_order", { ascending: true }).order("created_at", { ascending: false })
+          .then(function (res) {
+            if (res.error) { grid.textContent = ""; grid.appendChild(el("div", "gal-empty", "We could not load the gallery. Please refresh the page.")); return; }
+            all = res.data || []; draw();
+          });
       })();
     </script>
 </body></html>

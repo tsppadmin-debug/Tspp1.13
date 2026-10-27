@@ -23,7 +23,7 @@
     "$" + Number(n || 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const today = () => new Date().toLocaleDateString("en-CA");
   const fmtDate = (d) =>
-    d ? new Date(d + "T00:00:00").toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "-";
+    d ? new Date(d + "T00:00:00").toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "Not set";
   const fmtStamp = (d) =>
     new Date(d).toLocaleString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
   const opts = (map, sel) =>
@@ -62,6 +62,7 @@
   const MODULES = [
     { key: "partners", label: "Partners" },
     { key: "documents", label: "Invoices" },
+    { key: "gallery", label: "Gallery" },
   ];
   const closedStage = (p) => p.stage === "won" || p.stage === "lost";
 
@@ -72,6 +73,9 @@
     partners: [],
     docs: [],
     team: [],
+    photos: [],
+    gcol: "saturday",
+    settings: {},
     pf: { q: "", stage: "", category: "", due: false },
     df: { q: "", type: "", status: "" },
   };
@@ -134,12 +138,13 @@
     overview: { title: "Overview", ok: () => true, render: viewOverview },
     partners: { title: "Partners", ok: () => can("partners"), render: viewPartners },
     documents: { title: "Invoices", ok: () => can("documents"), render: viewDocuments },
+    gallery: { title: "Gallery", ok: () => can("gallery"), render: viewGallery },
     team: { title: "Team access", ok: () => isAdmin(), render: viewTeam },
   };
 
   function renderShell() {
     $("#me-email").textContent = S.me.full_name || S.me.email;
-    $("#me-role").textContent = S.me.role + (S.me.full_name ? " - " + S.me.email : "");
+    $("#me-role").textContent = S.me.role + (S.me.full_name ? " · " + S.me.email : "");
     $("#nav").innerHTML = Object.entries(VIEWS)
       .filter(([, v]) => v.ok())
       .map(([k, v]) => `<a href="#${k}" data-view="${k}">${esc(v.title)}</a>`)
@@ -311,7 +316,7 @@
     const strip = Object.keys(STAGES).map((k) => {
       const list = S.partners.filter((p) => p.stage === k);
       const val = list.reduce((a, p) => a + Number(p.value_usd), 0);
-      return `<button type="button" class="chip${S.pf.stage === k ? " on" : ""}" data-stage="${k}"><div class="n">${list.length}</div><div class="t">${esc(STAGES[k])}${val ? " - " + money(val) : ""}</div></button>`;
+      return `<button type="button" class="chip${S.pf.stage === k ? " on" : ""}" data-stage="${k}"><div class="n">${list.length}</div><div class="t">${esc(STAGES[k])}${val ? " · " + money(val) : ""}</div></button>`;
     });
     $("#pstrip").innerHTML = strip.join("");
     $$("#pstrip .chip").forEach((c) =>
@@ -329,9 +334,9 @@
             return `<tr class="click" data-id="${esc(p.id)}">
               <td><strong>${esc(p.name)}</strong>${p.published ? ' <span class="badge s-won">On website</span>' : ""}<div class="sub">${esc(CATEGORIES[p.category] || p.category)}</div></td>
               <td><span class="badge s-${esc(p.stage)}">${esc(STAGES[p.stage] || p.stage)}</span></td>
-              <td>${esc(p.contact_name || "-")}<div class="sub">${esc(p.contact_email || p.contact_phone || "")}</div></td>
-              <td class="num">${p.value_usd ? money(p.value_usd) : "-"}</td>
-              <td class="sub">${esc(p.owner_email || "-")}</td>
+              <td>${esc(p.contact_name || "None")}<div class="sub">${esc(p.contact_email || p.contact_phone || "")}</div></td>
+              <td class="num">${p.value_usd ? money(p.value_usd) : "None"}</td>
+              <td class="sub">${esc(p.owner_email || "None")}</td>
               <td class="${od ? "overdue" : ""}">${fmtDate(p.next_follow_up)}</td>
             </tr>`;
           })
@@ -517,8 +522,228 @@
     if (!box) return;
     if (error) return (box.innerHTML = `<div class="msg-error">${esc(error.message)}</div>`);
     box.innerHTML = data.length
-      ? data.map((a) => `<div class="act"><div class="meta"><span class="kind">${esc(ACT_KINDS[a.kind] || a.kind)}</span> - ${esc(fmtStamp(a.created_at))} - ${esc(a.created_by || "")}</div><div>${esc(a.note)}</div></div>`).join("")
+      ? data.map((a) => `<div class="act"><div class="meta"><span class="kind">${esc(ACT_KINDS[a.kind] || a.kind)}</span> · ${esc(fmtStamp(a.created_at))} · ${esc(a.created_by || "")}</div><div>${esc(a.note)}</div></div>`).join("")
       : '<div class="empty">No activity logged yet.</div>';
+  }
+
+  // =====================================================
+  // GALLERY (photos live on Cloudinary, rows live in Supabase)
+  // =====================================================
+  const COLLECTIONS = { wednesday: "Wednesday Night", saturday: "Social Saturday" };
+
+  // Ask Cloudinary for a small, optimized copy. Other hosts pass through untouched.
+  function cl(url, w) {
+    const m = /^(https:\/\/res\.cloudinary\.com\/[^/]+\/image\/upload\/)(.+)$/.exec(String(url || ""));
+    return m ? `${m[1]}f_auto,q_auto,c_limit,w_${w}/${m[2]}` : url;
+  }
+  function httpsUrl(v) {
+    try {
+      const u = new URL(String(v || "").trim());
+      return u.protocol === "https:" ? u.href : "";
+    } catch (e) {
+      return "";
+    }
+  }
+
+  async function loadSettings() {
+    const { data } = await sb.from("site_settings").select("key,value");
+    S.settings = {};
+    (data || []).forEach((r) => (S.settings[r.key] = r.value || ""));
+  }
+
+  async function viewGallery() {
+    const root = $("#view");
+    root.innerHTML = loading();
+    const [ph, _] = await Promise.all([
+      sb.from("gallery_photos").select("*").order("sort_order", { ascending: true }).order("created_at", { ascending: false }),
+      loadSettings(),
+    ]);
+    if (ph.error) return fail(root, ph.error);
+    S.photos = ph.data;
+
+    $("#top-actions").innerHTML = '<button class="btn" id="add-photos" type="button">Upload photos</button>';
+    $("#add-photos").onclick = () => openUpload();
+
+    const ready = !!S.settings.cloudinary_preset;
+    root.innerHTML = `
+      <div class="card" id="cl-card" style="margin-bottom:16px">
+        <h2 style="margin-bottom:6px">Cloudinary</h2>
+        ${
+          ready
+            ? `<p class="sub">Uploads go to cloud <strong>${esc(S.settings.cloudinary_cloud || "")}</strong> using the preset <strong>${esc(S.settings.cloudinary_preset)}</strong>. The website asks Cloudinary for small, optimized versions, so pages stay fast.</p>`
+            : `<p class="sub">One setup step is left before uploads work. In Cloudinary go to Settings, Upload, Upload presets, add a preset, set Signing mode to Unsigned, and save. Then type its name here. Until then you can still add photos by pasting links.</p>`
+        }
+        ${
+          isAdmin()
+            ? `<form id="cl-form" class="act-form" style="margin-top:10px"><input class="input" name="cloud" placeholder="Cloud name" maxlength="60" value="${esc(S.settings.cloudinary_cloud || "")}" style="max-width:180px" /><input class="input" name="preset" placeholder="Unsigned upload preset name" maxlength="80" value="${esc(S.settings.cloudinary_preset || "")}" /><button class="btn small" type="submit">Save</button></form>`
+            : ready
+            ? ""
+            : '<p class="sub" style="margin-top:8px">Ask an admin to finish this step.</p>'
+        }
+      </div>
+      <div id="gstrip" class="strip"></div>
+      <div id="ggrid" class="photo-grid"></div>`;
+
+    const clf = $("#cl-form");
+    if (clf)
+      clf.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const fd = new FormData(e.target);
+        const cloud = String(fd.get("cloud") || "").trim();
+        const preset = String(fd.get("preset") || "").trim();
+        if (!/^[A-Za-z0-9_-]*$/.test(cloud) || !/^[A-Za-z0-9_.-]*$/.test(preset)) return toast("Use letters, numbers and underscores only", true);
+        const rows = [
+          { key: "cloudinary_cloud", value: cloud, updated_by: S.me.email, updated_at: new Date().toISOString() },
+          { key: "cloudinary_preset", value: preset, updated_by: S.me.email, updated_at: new Date().toISOString() },
+        ];
+        const { error } = await sb.from("site_settings").upsert(rows);
+        if (error) return toast(error.message, true);
+        toast("Cloudinary settings saved");
+        viewGallery();
+      });
+    drawGallery();
+  }
+
+  function drawGallery() {
+    const strip = Object.keys(COLLECTIONS).map((k) => {
+      const n = S.photos.filter((p) => p.collection === k).length;
+      return `<button type="button" class="chip${S.gcol === k ? " on" : ""}" data-col="${k}"><div class="n">${n}</div><div class="t">${esc(COLLECTIONS[k])}</div></button>`;
+    });
+    $("#gstrip").innerHTML = strip.join("");
+    $$("#gstrip .chip").forEach((c) =>
+      c.addEventListener("click", () => {
+        S.gcol = c.dataset.col;
+        drawGallery();
+      })
+    );
+    const list = S.photos.filter((p) => p.collection === S.gcol);
+    $("#ggrid").innerHTML = list.length
+      ? list
+          .map(
+            (p) => `<button type="button" class="photo" data-id="${esc(p.id)}" aria-label="Edit ${esc(p.caption || "photo")}">
+              <img src="${esc(cl(p.image_url, 320))}" alt="${esc(p.alt_text || p.caption || "")}" loading="lazy" />
+              ${p.published ? "" : '<span class="badge photo-flag">Hidden</span>'}
+              <span class="photo-cap">${esc(p.caption || "No caption")}</span>
+            </button>`
+          )
+          .join("")
+      : `<div class="empty">No photos in ${esc(COLLECTIONS[S.gcol])} yet. Use Upload photos to add some.</div>`;
+    $$("#ggrid .photo").forEach((b) => b.addEventListener("click", () => openPhoto(b.dataset.id)));
+  }
+
+  function openUpload() {
+    const ready = !!S.settings.cloudinary_preset;
+    const body = `
+      <form id="upform" class="form-grid" autocomplete="off">
+        <div><label class="f">Collection</label><select class="select" name="collection">${opts(COLLECTIONS, S.gcol)}</select></div>
+        <div><label class="f">Label (optional)</label><input class="input" name="tag" maxlength="60" placeholder="Example: Cafe Night" /></div>
+        <div class="full"><label class="f">Caption for all (optional)</label><input class="input" name="caption" maxlength="140" placeholder="Example: Movie night at Jiang" /></div>
+        <div class="full"><label class="f">Photos</label>
+          <input class="input" type="file" id="upfiles" accept="image/png,image/jpeg,image/webp" multiple ${ready ? "" : "disabled"} />
+          <div class="hint">${ready ? "JPG, PNG or WebP, up to 10 MB each, 30 at a time. No need to resize first." : "Uploading is off until the Cloudinary preset is saved on this page. You can paste links below instead."}</div>
+        </div>
+        <div class="full"><label class="f">Or paste image links</label><textarea class="textarea" name="links" placeholder="One https link per line, for example a Cloudinary link" maxlength="6000"></textarea></div>
+        <div class="full"><div id="upstatus" class="up-status"></div></div>
+      </form>`;
+    const foot = `<span class="spacer"></span><button class="btn light" type="button" data-close>Close</button><button class="btn" type="submit" form="upform" id="upgo">Add to gallery</button>`;
+    const m = openModal("Upload photos", body, foot, true);
+
+    $("#upform", m).addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const files = Array.from($("#upfiles", m).files || []);
+      const links = String(fd.get("links") || "").split(/\r?\n/).map((x) => x.trim()).filter(Boolean);
+      if (!files.length && !links.length) return toast("Choose photos or paste a link first", true);
+      if (files.length > 30) return toast("Please upload 30 photos or fewer at a time", true);
+      const badLink = links.find((l) => !httpsUrl(l));
+      if (badLink) return toast("This link does not start with https: " + badLink.slice(0, 60), true);
+      for (const f of files) {
+        if (!/^image\/(png|jpeg|webp)$/.test(f.type)) return toast(f.name + " is not a JPG, PNG or WebP", true);
+        if (f.size > 10 * 1024 * 1024) return toast(f.name + " is over 10 MB", true);
+      }
+      const collection = fd.get("collection");
+      const tag = String(fd.get("tag") || "").trim() || null;
+      const caption = String(fd.get("caption") || "").trim() || null;
+      const btn = $("#upgo", m);
+      btn.disabled = true;
+      const box = $("#upstatus", m);
+      const say = (t, cls) => (box.innerHTML += `<div class="${cls || ""}">${esc(t)}</div>`);
+      const done = [];
+      const base = Math.max(0, ...S.photos.filter((p) => p.collection === collection).map((p) => p.sort_order)) + 10;
+
+      for (const [i, f] of files.entries()) {
+        say(`Uploading ${f.name} (${i + 1} of ${files.length})...`);
+        try {
+          const body = new FormData();
+          body.append("file", f);
+          body.append("upload_preset", S.settings.cloudinary_preset);
+          body.append("folder", "the-social/" + collection);
+          const res = await fetch(`https://api.cloudinary.com/v1_1/${encodeURIComponent(S.settings.cloudinary_cloud)}/image/upload`, { method: "POST", body });
+          const j = await res.json();
+          if (!res.ok || !j.secure_url) throw new Error((j.error && j.error.message) || "Cloudinary refused the upload");
+          done.push({ image_url: j.secure_url, alt_text: caption || f.name.replace(/\.[^.]+$/, "").slice(0, 120) });
+        } catch (err) {
+          say(f.name + ": " + (err.message || "failed"), "msg-error");
+        }
+      }
+      links.forEach((l) => done.push({ image_url: httpsUrl(l), alt_text: caption }));
+
+      if (!done.length) {
+        btn.disabled = false;
+        return toast("Nothing was added", true);
+      }
+      const rows = done.map((d, i) => ({ collection, tag, caption, alt_text: d.alt_text, image_url: d.image_url, sort_order: base + i * 10, published: true, created_by: S.me.email }));
+      const { error } = await sb.from("gallery_photos").insert(rows);
+      btn.disabled = false;
+      if (error) return toast(error.message, true);
+      toast(`${rows.length} photo${rows.length === 1 ? "" : "s"} added to ${COLLECTIONS[collection]}`);
+      S.gcol = collection;
+      closeModal();
+      viewGallery();
+    });
+  }
+
+  function openPhoto(id) {
+    const p = S.photos.find((x) => x.id === id);
+    if (!p) return;
+    const body = `
+      <div class="media-row" style="margin-bottom:16px"><div class="thumb wide" style="width:160px;height:120px"><img src="${esc(cl(p.image_url, 400))}" alt="" /></div></div>
+      <form id="phform" class="form-grid" autocomplete="off">
+        <div><label class="f">Collection</label><select class="select" name="collection">${opts(COLLECTIONS, p.collection)}</select></div>
+        <div><label class="f">Label</label><input class="input" name="tag" maxlength="60" value="${esc(p.tag)}" /></div>
+        <div class="full"><label class="f">Caption</label><input class="input" name="caption" maxlength="140" value="${esc(p.caption)}" /></div>
+        <div class="full"><label class="f">Description for screen readers</label><input class="input" name="alt_text" maxlength="160" value="${esc(p.alt_text)}" /></div>
+        <div><label class="f">Display order</label><input class="input" type="number" min="0" max="99999" step="1" name="sort_order" value="${esc(p.sort_order)}" /><div class="hint">Lower numbers show first.</div></div>
+        <div style="align-self:end"><label class="check"><input type="checkbox" name="published" ${p.published ? "checked" : ""} /> Show on website</label></div>
+      </form>`;
+    const foot = `<button class="btn danger" type="button" id="phdel">Delete</button><span class="spacer"></span><button class="btn light" type="button" data-close>Cancel</button><button class="btn" type="submit" form="phform" id="phsave">Save changes</button>`;
+    const m = openModal("Edit photo", body, foot);
+    $("#phform", m).addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const row = {
+        collection: fd.get("collection"),
+        tag: String(fd.get("tag") || "").trim() || null,
+        caption: String(fd.get("caption") || "").trim() || null,
+        alt_text: String(fd.get("alt_text") || "").trim() || null,
+        sort_order: Math.min(99999, Math.max(0, Math.round(num(fd.get("sort_order"))))),
+        published: fd.get("published") === "on",
+      };
+      const { error } = await sb.from("gallery_photos").update(row).eq("id", p.id);
+      if (error) return toast(error.message, true);
+      toast("Photo updated");
+      S.gcol = row.collection;
+      closeModal();
+      viewGallery();
+    });
+    $("#phdel", m).onclick = async () => {
+      if (!confirm("Remove this photo from the gallery? The file stays in your Cloudinary account.")) return;
+      const { error } = await sb.from("gallery_photos").delete().eq("id", p.id);
+      if (error) return toast(error.message, true);
+      toast("Photo removed");
+      closeModal();
+      viewGallery();
+    };
   }
 
   // =====================================================
