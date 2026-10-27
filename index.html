@@ -12,6 +12,8 @@
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preload" href="/fonts/aileron-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="/fonts.css">
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link
       href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&amp;display=swap"
@@ -90,14 +92,14 @@
               base: "8px",
             },
             fontFamily: {
-              "body-lg": ["Outfit"],
-              "headline-lg-mobile": ["Outfit"],
-              caption: ["Outfit"],
-              "headline-lg": ["Outfit"],
-              "label-caps": ["Outfit"],
-              "headline-md": ["Outfit"],
-              "display-lg": ["Outfit"],
-              "body-md": ["Outfit"],
+              "body-lg": ["Aileron", "Helvetica Neue", "Arial", "sans-serif"],
+              "headline-lg-mobile": ["Agrandir", "Outfit", "sans-serif"],
+              caption: ["Aileron", "Helvetica Neue", "Arial", "sans-serif"],
+              "headline-lg": ["Agrandir", "Outfit", "sans-serif"],
+              "label-caps": ["Aileron", "Helvetica Neue", "Arial", "sans-serif"],
+              "headline-md": ["Agrandir", "Outfit", "sans-serif"],
+              "display-lg": ["Agrandir", "Outfit", "sans-serif"],
+              "body-md": ["Aileron", "Helvetica Neue", "Arial", "sans-serif"],
             },
             fontSize: {
               "body-lg": [
@@ -311,7 +313,6 @@
       >
         <div class="md:w-4/5">
           <div class="flex items-center gap-3 mb-6">
-            <span class="w-8 h-[1px] bg-secondary"></span>
             <span
               class="font-label-caps text-label-caps tracking-label text-secondary"
               >EST. 2026, CAMBODIA</span

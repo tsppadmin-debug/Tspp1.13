@@ -7,6 +7,8 @@
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preload" href="/fonts/aileron-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="/fonts.css">
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link
       href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&amp;display=swap"
@@ -85,14 +87,14 @@
               base: "8px",
             },
             fontFamily: {
-              "body-lg": ["Outfit"],
-              "headline-lg-mobile": ["Outfit"],
-              caption: ["Outfit"],
-              "headline-lg": ["Outfit"],
-              "label-caps": ["Outfit"],
-              "headline-md": ["Outfit"],
-              "display-lg": ["Outfit"],
-              "body-md": ["Outfit"],
+              "body-lg": ["Aileron", "Helvetica Neue", "Arial", "sans-serif"],
+              "headline-lg-mobile": ["Agrandir", "Outfit", "sans-serif"],
+              caption: ["Aileron", "Helvetica Neue", "Arial", "sans-serif"],
+              "headline-lg": ["Agrandir", "Outfit", "sans-serif"],
+              "label-caps": ["Aileron", "Helvetica Neue", "Arial", "sans-serif"],
+              "headline-md": ["Agrandir", "Outfit", "sans-serif"],
+              "display-lg": ["Agrandir", "Outfit", "sans-serif"],
+              "body-md": ["Aileron", "Helvetica Neue", "Arial", "sans-serif"],
             },
             fontSize: {
               "body-lg": [
@@ -293,7 +295,7 @@
     text-align: center;
   }
   .policy-head .eyebrow {
-    font-family: "Outfit", sans-serif;
+    font-family: "Aileron", "Helvetica Neue", Arial, sans-serif;
     font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.18em;
@@ -302,7 +304,7 @@
     margin-bottom: 1.25rem;
   }
   .policy-head h1 {
-    font-family: "Outfit", sans-serif;
+    font-family: "Aileron", "Helvetica Neue", Arial, sans-serif;
     font-size: clamp(40px, 7vw, 64px);
     line-height: 1.02;
     letter-spacing: -0.04em;
@@ -311,7 +313,7 @@
     margin: 0 0 1rem;
   }
   .policy-head p {
-    font-family: "Outfit", sans-serif;
+    font-family: "Aileron", "Helvetica Neue", Arial, sans-serif;
     font-size: 15px;
     color: #747878;
     letter-spacing: 0.02em;
@@ -332,27 +334,27 @@
     background: transparent !important;
   }
   [data-custom-class='title'], [data-custom-class='title'] * {
-    font-family: "Outfit", sans-serif !important;
+    font-family: "Aileron", "Helvetica Neue", Arial, sans-serif !important;
     font-size: 30px !important;
     font-weight: 600 !important;
     letter-spacing: -0.02em !important;
     color: #1c1b1b !important;
   }
   [data-custom-class='subtitle'], [data-custom-class='subtitle'] * {
-    font-family: "Outfit", sans-serif !important;
+    font-family: "Aileron", "Helvetica Neue", Arial, sans-serif !important;
     color: #747878 !important;
     font-size: 14px !important;
     letter-spacing: 0.02em !important;
   }
   [data-custom-class='heading_1'], [data-custom-class='heading_1'] * {
-    font-family: "Outfit", sans-serif !important;
+    font-family: "Aileron", "Helvetica Neue", Arial, sans-serif !important;
     font-size: 22px !important;
     font-weight: 600 !important;
     letter-spacing: -0.01em !important;
     color: #1c1b1b !important;
   }
   [data-custom-class='heading_2'], [data-custom-class='heading_2'] * {
-    font-family: "Outfit", sans-serif !important;
+    font-family: "Aileron", "Helvetica Neue", Arial, sans-serif !important;
     font-size: 17px !important;
     font-weight: 600 !important;
     color: #1c1b1b !important;
@@ -360,13 +362,13 @@
   [data-custom-class='body_text'], [data-custom-class='body_text'] * {
     color: #54585a !important;
     font-size: 15px !important;
-    font-family: "Outfit", sans-serif !important;
+    font-family: "Aileron", "Helvetica Neue", Arial, sans-serif !important;
     font-weight: 300 !important;
   }
   [data-custom-class='link'], [data-custom-class='link'] * {
     color: #00A3FF !important;
     font-size: 15px !important;
-    font-family: "Outfit", sans-serif !important;
+    font-family: "Aileron", "Helvetica Neue", Arial, sans-serif !important;
     font-weight: 400 !important;
     word-break: break-word !important;
   }

@@ -15,7 +15,7 @@ body {
   margin: 0;
   background: #fbf7f5;
   color: #1c1b1b;
-  font-family: "Outfit", sans-serif;
+  font-family: "Aileron", "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: geometricPrecision;
   padding-top: 90px;
@@ -154,7 +154,7 @@ button {
   width: 44px;
   height: 44px;
   place-items: center;
-  font-family: "Outfit", sans-serif;
+  font-family: "Aileron", "Helvetica Neue", Arial, sans-serif;
   font-size: 18px;
   font-weight: 500;
   line-height: 1;

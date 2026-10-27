@@ -1,0 +1,20 @@
+/* THE SOCIAL type system
+   Headings: Agrandir (licensed, add the files to /fonts, see fonts/README.txt)
+   Body and small text: Aileron (free, CC0, self hosted) */
+
+@font-face { font-family: "Aileron"; font-style: normal; font-weight: 300; font-display: swap; src: url("/fonts/aileron-latin-300-normal.woff2") format("woff2"); }
+@font-face { font-family: "Aileron"; font-style: normal; font-weight: 400 500; font-display: swap; src: url("/fonts/aileron-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Aileron"; font-style: italic; font-weight: 400; font-display: swap; src: url("/fonts/aileron-latin-400-italic.woff2") format("woff2"); }
+@font-face { font-family: "Aileron"; font-style: normal; font-weight: 600; font-display: swap; src: url("/fonts/aileron-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Aileron"; font-style: normal; font-weight: 700 900; font-display: swap; src: url("/fonts/aileron-latin-700-normal.woff2") format("woff2"); }
+
+/* Agrandir: used from the visitor's machine if installed, otherwise from /fonts once the files are added */
+@font-face { font-family: "Agrandir"; font-style: normal; font-weight: 100 500; font-display: swap; src: local("Agrandir"), local("Agrandir Regular"), url("/fonts/Agrandir-Regular.woff2") format("woff2"); }
+@font-face { font-family: "Agrandir"; font-style: normal; font-weight: 600 900; font-display: swap; src: local("Agrandir Bold"), local("Agrandir-Bold"), url("/fonts/Agrandir-Bold.woff2") format("woff2"); }
+
+:root {
+  --font-display: "Agrandir", "Outfit", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Aileron", "Helvetica Neue", Arial, sans-serif;
+}
+body { font-family: var(--font-body); }
+h1, h2, h3, h4, .font-display { font-family: var(--font-display); }
