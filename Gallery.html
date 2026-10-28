@@ -254,16 +254,16 @@
         }
 
         /* ---- gallery (database driven) ---- */
-        .gal-switch { display: inline-grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 6px; border-radius: 999px; background: rgba(28,27,27,.06); max-width: 100%; }
-        html.dark .gal-switch { background: rgba(255,255,255,.08); }
-        .gal-opt { all: unset; box-sizing: border-box; cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 12px 26px 12px 18px; border-radius: 999px; color: inherit; transition: background 260ms ease, color 260ms ease, box-shadow 260ms ease; }
         .gal-opt:focus-visible, .lb-btn:focus-visible, .gal-tile:focus-visible, .gal-more:focus-visible { outline: 2px solid #00A3FF; outline-offset: 3px; }
-        .gal-opt .material-symbols-outlined { font-size: 24px; }
-        .gal-opt-copy { display: grid; line-height: 1.15; text-align: left; }
-        .gal-opt-copy strong { font-size: .95rem; font-weight: 600; letter-spacing: .02em; }
-        .gal-opt-copy small { font-size: .72rem; opacity: .65; letter-spacing: .06em; text-transform: uppercase; }
-        .gal-opt[aria-selected="true"] { background: #000; color: #fff; box-shadow: 0 10px 30px rgba(0,0,0,.18); }
-        html.dark .gal-opt[aria-selected="true"] { background: #f4f0ef; color: #0d0d0d; }
+        /* minimal day and night switch */
+        .gal-switch { display: inline-flex; gap: 32px; border-bottom: 1px solid rgba(128,128,128,.28); max-width: 100%; }
+        .gal-opt { all: unset; box-sizing: border-box; cursor: pointer; position: relative; display: inline-flex; align-items: center; gap: 10px; padding: 10px 0 14px; font-size: .74rem; letter-spacing: .18em; text-transform: uppercase; opacity: .45; transition: opacity 240ms ease; }
+        .gal-opt:hover { opacity: .8; }
+        .gal-opt[aria-selected="true"] { opacity: 1; }
+        .gal-opt::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform 320ms cubic-bezier(.2,.8,.2,1); }
+        .gal-opt[aria-selected="true"]::after { transform: scaleX(1); }
+        .gal-dot { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid currentColor; display: inline-block; flex: none; }
+        .gal-dot.fill { background: currentColor; }
         .gal-count { margin-top: 14px; font-size: .85rem; opacity: .65; }
         .gal-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
         @media (min-width: 768px) { .gal-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; } }
@@ -430,14 +430,8 @@ Capturing the highlights of each event
 
 <section class="px-lg md:px-2xl mb-xl">
   <div class="gal-switch" role="tablist" aria-label="Gallery collection">
-    <button type="button" role="tab" class="gal-opt" data-col="saturday" id="opt-saturday">
-      <span class="material-symbols-outlined" aria-hidden="true">light_mode</span>
-      <span class="gal-opt-copy"><strong>Social Saturday</strong><small>Daytime events</small></span>
-    </button>
-    <button type="button" role="tab" class="gal-opt" data-col="wednesday" id="opt-wednesday">
-      <span class="material-symbols-outlined" aria-hidden="true">dark_mode</span>
-      <span class="gal-opt-copy"><strong>Wednesday Night</strong><small>After dark</small></span>
-    </button>
+    <button type="button" role="tab" class="gal-opt" data-col="saturday" id="opt-saturday"><i class="gal-dot" aria-hidden="true"></i>Social Saturday</button>
+    <button type="button" role="tab" class="gal-opt" data-col="wednesday" id="opt-wednesday"><i class="gal-dot fill" aria-hidden="true"></i>Social Night</button>
   </div>
   <p id="gal-count" class="gal-count" aria-live="polite">&nbsp;</p>
 </section>
@@ -812,8 +806,8 @@ Capturing the highlights of each event
           { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } }
         );
         var PAGE = 24;
-        var NAMES = { saturday: "Social Saturday", wednesday: "Wednesday Night" };
-        var KICKER = { saturday: "The Social Saturday", wednesday: "The Social Wednesday Night" };
+        var NAMES = { saturday: "Social Saturday", wednesday: "Social Night" };
+        var KICKER = { saturday: "The Social Saturday", wednesday: "The Social Night" };
         var all = [], col = window.__galleryCol || "saturday", shown = PAGE, view = [], at = 0, lastFocus = null;
         var grid = document.getElementById("gal-grid");
         var countEl = document.getElementById("gal-count");

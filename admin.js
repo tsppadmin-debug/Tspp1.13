@@ -529,7 +529,7 @@
   // =====================================================
   // GALLERY (photos live on Cloudinary, rows live in Supabase)
   // =====================================================
-  const COLLECTIONS = { wednesday: "Wednesday Night", saturday: "Social Saturday" };
+  const COLLECTIONS = { wednesday: "Social Night", saturday: "Social Saturday" };
 
   // Ask Cloudinary for a small, optimized copy. Other hosts pass through untouched.
   function cl(url, w) {
