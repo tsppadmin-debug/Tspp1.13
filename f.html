@@ -51,7 +51,7 @@
 
   if (!/^[a-z0-9][a-z0-9-]{1,58}$/.test(slug)) { state("Form not found", "Check the link and try again.", true); return; }
 
-  fetch(URL_ + "/rest/v1/forms?select=id,slug,title,description,fields,status,theme,thank_you,closes_at,max_responses&slug=eq." + encodeURIComponent(slug), { headers: H })
+  fetch(URL_ + "/rest/v1/forms?select=id,slug,title,description,fields,status,theme,thank_you,closes_at,max_responses,payment&slug=eq." + encodeURIComponent(slug), { headers: H })
     .then(function (r) { if (!r.ok) throw new Error("http"); return r.json(); })
     .then(function (rows) {
       var f = rows && rows[0];
@@ -61,8 +61,55 @@
       document.documentElement.classList.add("fb-" + mode);
       var closed = f.status === "closed" || (f.closes_at && new Date(f.closes_at) < new Date());
       if (closed) { state(f.title, "This form is closed and is no longer taking responses.", true); return; }
+      var qs = new URLSearchParams(location.search);
+      var tranBack = (qs.get("paid") || "").toUpperCase();
+      var pendingKey = "fb-pay:" + slug;
+      function fn(body) {
+        return fetch(URL_ + "/functions/v1/payway", { method: "POST", headers: Object.assign({ "Content-Type": "application/json" }, H), body: JSON.stringify(body) })
+          .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j && j.error || "http"); return j; }); });
+      }
+      function openPayWay(pay) {
+        try { localStorage.setItem(pendingKey, pay.tran_id); } catch (e) {}
+        return fn({ action: "checkout", tran_id: pay.tran_id }).then(function (r) {
+          if (r.status === "paid") { location.replace("/f/" + slug + "?paid=" + pay.tran_id); return; }
+          var form = document.createElement("form");
+          form.method = "POST"; form.action = r.action_url; form.enctype = "multipart/form-data"; form.style.display = "none";
+          Object.keys(r.fields).forEach(function (k) {
+            var i = document.createElement("input"); i.type = "hidden"; i.name = k; i.value = r.fields[k]; form.appendChild(i);
+          });
+          document.body.appendChild(form);
+          form.submit();
+        });
+      }
+      if (tranBack && /^[A-Z0-9]{6,20}$/.test(tranBack)) {
+        var tries = 0;
+        FB.status(root, f, { brand: true, tick: false, title: "Confirming your payment", text: "One moment while we check with ABA PayWay." });
+        (function poll() {
+          fn({ action: "verify", tran_id: tranBack }).then(function (r) {
+            if (r.status === "paid") {
+              try { localStorage.removeItem(pendingKey); } catch (e) {}
+              FB.status(root, f, { brand: true, title: "Payment received", text: f.thank_you || "Thanks, you are all set." });
+            } else if (r.status === "failed" || r.status === "mismatch") {
+              FB.status(root, f, { brand: true, tick: false, title: "Payment not completed", text: "ABA PayWay did not confirm this payment. You can try again.", button: "Try payment again", onButton: function (b) { b.disabled = true; openPayWay({ tran_id: tranBack }).catch(function () { b.disabled = false; }); } });
+            } else if (++tries < 8) setTimeout(poll, 2500);
+            else FB.status(root, f, { brand: true, tick: false, title: "Still waiting for the bank", text: "We have your answers. If you paid, it can take a few minutes to show up. You can close this page.", button: "Check again", onButton: function () { location.reload(); } });
+          }).catch(function () {
+            if (++tries < 8) setTimeout(poll, 2500);
+            else FB.status(root, f, { brand: true, tick: false, title: "Could not check the payment", text: "Refresh this page in a moment. Your answers are saved.", button: "Refresh", onButton: function () { location.reload(); } });
+          });
+        })();
+        return;
+      }
+      if (qs.get("cancelled")) {
+        var saved = ""; try { saved = localStorage.getItem(pendingKey) || ""; } catch (e) {}
+        if (saved) {
+          FB.status(root, f, { brand: true, tick: false, title: "Payment not completed", text: "Your answers are saved. Finish the payment whenever you are ready.", button: "Pay now", onButton: function (b) { b.disabled = true; openPayWay({ tran_id: saved }).catch(function () { b.disabled = false; }); } });
+          return;
+        }
+      }
       FB.render(root, f, {
         brand: true,
+        onPay: openPayWay,
         onSubmit: function (answers, hp) {
           return fetch(URL_ + "/rest/v1/rpc/submit_form", {
             method: "POST",
@@ -70,7 +117,7 @@
             body: JSON.stringify({ p_slug: slug, p_answers: answers, p_hp: hp || "" })
           }).then(function (r) {
             return r.json().then(function (b) {
-              if (r.ok) return { ok: true, message: b && b.message };
+              if (r.ok) return { ok: true, message: b && b.message, pay: b && b.pay };
               return { ok: false, error: (b && b.message) || "" };
             }, function () { return { ok: false, error: "" }; });
           });

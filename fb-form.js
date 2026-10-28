@@ -28,7 +28,8 @@
     form_full: "This form has reached its limit of responses.",
     form_unavailable: "This form is not available.",
     rate_limited: "Too many tries from your connection. Wait a few minutes and send again.",
-    invalid_payload: "Something went wrong with your answers. Refresh the page and try again."
+    invalid_payload: "Something went wrong with your answers. Refresh the page and try again.",
+    payment_misconfigured: "Payment is not set up for this form yet. Please tell the organiser."
   };
 
   /* Validate one value on the client. Mirrors the server rules. */
@@ -263,13 +264,22 @@
     hpWrap.appendChild(hp);
     formEl.appendChild(hpWrap);
 
+    var pay = form.payment && form.payment.enabled && Number(form.payment.amount) > 0 ? form.payment : null;
+    if (pay) {
+      var pc = el("div", "fb-card fb-pay");
+      pc.appendChild(el("div", "fb-pay-amt", "$" + Number(pay.amount).toFixed(2)));
+      pc.appendChild(el("div", "fb-pay-txt", (pay.description ? pay.description + ". " : "") + "After you submit, you pay securely on ABA PayWay with ABA Mobile, KHQR or card."));
+      formEl.appendChild(pc);
+    }
+
     var banner = el("div", "fb-banner");
     banner.hidden = true;
     banner.setAttribute("role", "alert");
     formEl.appendChild(banner);
 
     var actions = el("div", "fb-actions");
-    var submit = el("button", "fb-submit", opts.preview ? "Submit (preview)" : "Submit");
+    var submitLabel = pay ? "Continue to payment" : "Submit";
+    var submit = el("button", "fb-submit", opts.preview ? submitLabel + " (preview)" : submitLabel);
     submit.type = "submit";
     var clear = el("button", "fb-clear", "Clear form");
     clear.type = "button";
@@ -338,7 +348,27 @@
       if (opts.preview) { done("This is a preview. Nothing was saved."); return; }
       sending = true; submit.disabled = true; submit.textContent = "Sending";
       Promise.resolve(opts.onSubmit(answers, hp.value)).then(function (res) {
-        sending = false; submit.disabled = false; submit.textContent = "Submit";
+        sending = false; submit.disabled = false; submit.textContent = submitLabel;
+        if (res && res.ok && res.pay && opts.onPay) {
+          clearDraft();
+          sending = true; submit.disabled = true; submit.textContent = "Opening ABA PayWay";
+          var go = function () {
+            return Promise.resolve(opts.onPay(res.pay)).catch(function () {
+              sending = false;
+              formEl.hidden = true;
+              var c = el("div", "fb-card fb-done");
+              c.appendChild(el("h2", null, "Answers saved, payment not started"));
+              c.appendChild(el("p", null, "We could not open the payment page. Your answers are safe. Try again to finish."));
+              var again = el("button", "fb-submit", "Try payment again");
+              again.type = "button"; again.style.marginTop = "20px";
+              again.addEventListener("click", function () { again.disabled = true; go().then(function () { again.disabled = false; }); });
+              c.appendChild(again);
+              page.insertBefore(c, formEl);
+            });
+          };
+          go();
+          return;
+        }
         if (res && res.ok) { done(res.message); return; }
         var code = (res && res.error) || "";
         var m = /^(required|invalid):(.+)$/.exec(code);
@@ -353,7 +383,7 @@
           showBanner(ERR[code] || "We could not send your answers. Check your connection and try again. Your answers are still here.");
         }
       }).catch(function () {
-        sending = false; submit.disabled = false; submit.textContent = "Submit";
+        sending = false; submit.disabled = false; submit.textContent = submitLabel;
         showBanner("We could not send your answers. Check your connection and try again. Your answers are still here.");
       });
     });
@@ -362,5 +392,36 @@
     return { destroy: function () { root.textContent = ""; } };
   }
 
-  global.FB = { render: render, validate: validate, TYPES: TYPES, uid: uid, safeColor: safeColor, httpsUrl: httpsUrl };
+  /* A simple message page in the form's look: FB.status(root, form, {title, text, button, onButton, brand}) */
+  function status(root, form, cfg) {
+    var theme = (form && form.theme) || {};
+    var accent = safeColor(theme.accent);
+    root.textContent = "";
+    var wrap = el("div", "fb");
+    wrap.dataset.mode = ["light", "dark", "auto"].indexOf(theme.mode) >= 0 ? theme.mode : "light";
+    wrap.style.setProperty("--fb-accent", accent);
+    wrap.style.setProperty("--fb-on-accent", onColor(accent));
+    var page = el("div", "fb-wrap");
+    if (cfg.brand) {
+      var b = el("a", "fb-brand"); b.href = "/";
+      var logo = el("img"); logo.src = "/favicon.svg"; logo.alt = "";
+      b.appendChild(logo); b.appendChild(document.createTextNode("The Social Phnom Penh"));
+      page.appendChild(b);
+    }
+    var c = el("div", "fb-card fb-done");
+    if (cfg.tick !== false) c.appendChild(el("div", "tick"));
+    c.appendChild(el("h2", null, cfg.title || ""));
+    c.appendChild(el("p", null, cfg.text || ""));
+    if (cfg.button) {
+      var btn = el("button", "fb-submit", cfg.button);
+      btn.type = "button"; btn.style.marginTop = "20px";
+      btn.addEventListener("click", function () { cfg.onButton && cfg.onButton(btn); });
+      c.appendChild(btn);
+    }
+    page.appendChild(c);
+    wrap.appendChild(page);
+    root.appendChild(wrap);
+  }
+
+  global.FB = { status: status, render: render, validate: validate, TYPES: TYPES, uid: uid, safeColor: safeColor, httpsUrl: httpsUrl };
 })(window);

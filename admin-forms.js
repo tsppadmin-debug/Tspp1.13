@@ -309,6 +309,7 @@
       if (!data) return A.fail(root, "Form not found");
       data.fields = Array.isArray(data.fields) ? data.fields : [];
       data.theme = Object.assign({ accent: "#1a1a1a", mode: "light", cover_url: "" }, data.theme || {});
+      data.payment = data.payment && typeof data.payment === "object" ? data.payment : {};
       ED = { form: data, tab: tab || "questions", active: data.fields[0] ? data.fields[0].id : null, timer: null, saving: false, dirty: false, device: "phone" };
       drawEditor();
     }
@@ -380,6 +381,7 @@
         status: fm.status,
         theme: fm.theme,
         thank_you: fm.thank_you || "",
+        payment: fm.payment || {},
         closes_at: fm.closes_at || null,
         max_responses: fm.max_responses || null,
         updated_at: new Date().toISOString(),
@@ -637,6 +639,19 @@
       if (fm.max_responses) max.value = fm.max_responses;
       max.addEventListener("input", () => { const n = parseInt(max.value, 10); fm.max_responses = n > 0 ? n : null; touch(); });
 
+      const payOn = h("input", { type: "checkbox", checked: !!fm.payment.enabled });
+      const payAmt = h("input", { class: "input", type: "number", min: "0.1", max: "5000", step: "0.01", placeholder: "10.00" });
+      if (fm.payment.amount) payAmt.value = fm.payment.amount;
+      const payDesc = h("input", { class: "input", maxlength: "80", placeholder: "Entry fee, Ticket, Deposit" });
+      payDesc.value = fm.payment.description || "";
+      const syncPay = () => {
+        const n = parseFloat(payAmt.value);
+        fm.payment = { enabled: payOn.checked && n >= 0.1, amount: n >= 0.1 ? Math.round(n * 100) / 100 : "", description: payDesc.value.trim(), currency: "USD" };
+        if (payOn.checked && !(n >= 0.1)) setSave("Enter a price of at least 0.10", true);
+        else touch();
+      };
+      payOn.addEventListener("change", syncPay); payAmt.addEventListener("input", syncPay); payDesc.addEventListener("input", syncPay);
+
       grid.append(
         field("Status", status, null),
         field("Link name", slug, null),
@@ -645,7 +660,11 @@
         field("Cover image link", cover, "Optional. Paste an https image link, for example from Cloudinary.", true),
         field("Message after submitting", thanks, null, true),
         field("Close automatically on", closes, "Optional. Uses your time zone."),
-        field("Maximum responses", max, "Optional. The form closes when it is full.")
+        field("Maximum responses", max, "Optional. The form closes when it is full."),
+        h("div", { class: "full sect" }, h("h3", null, "Payment with ABA PayWay"), h("div", { class: "hint" }, "People pay after they submit. A response only counts as paid once ABA PayWay confirms it."),
+          h("label", { class: "check", style: "margin-top:10px" }, payOn, "Ask for payment on this form")),
+        field("Price in US dollars", payAmt, null),
+        field("What it is for", payDesc, "Shown next to the price.")
       );
       card.appendChild(grid);
       wrap.appendChild(card);
@@ -663,7 +682,7 @@
       const frame = h("div", { class: "fe-frame " + ED.device }, inner);
       wrap.append(bar, frame);
       const fm = ED.form;
-      FB.render(inner, { slug: fm.slug, title: fm.title, description: fm.description, fields: fm.fields, theme: fm.theme, thank_you: fm.thank_you }, { preview: true, embed: true });
+      FB.render(inner, { slug: fm.slug, title: fm.title, description: fm.description, fields: fm.fields, theme: fm.theme, thank_you: fm.thank_you, payment: fm.payment }, { preview: true, embed: true });
       wrap.appendChild(h("p", { class: "hint", style: "text-align:center;margin-top:10px" }, "This is how people see it. Submitting here saves nothing."));
     }
 
@@ -702,6 +721,8 @@
     }
 
     const valText = (v) => (v == null ? "" : Array.isArray(v) ? v.join("; ") : String(v));
+    const PAY = { paid: ["Paid", "s-won"], pending: ["Waiting", "s-draft"], failed: ["Failed", "s-lost"], mismatch: ["Check amount", "s-lost"] };
+    const payBadge = (r) => (r.payment ? h("span", { class: "badge " + (PAY[r.payment.status] || PAY.pending)[1] }, (PAY[r.payment.status] || PAY.pending)[0]) : null);
     const answerOf = (row, fid) => {
       const a = (row.answers || []).find((x) => x.id === fid);
       return a ? a.value : null;
@@ -720,7 +741,7 @@
         h("button", { class: "btn small", type: "button", disabled: !rows.length, onclick: exportCsv }, "Export CSV")
       );
       const wrap = h("div");
-      wrap.appendChild(h("div", { style: "margin-bottom:10px" }, h("h2", { style: "margin:0 0 4px" }, form.title), h("div", { class: "hint" }, rows.length + " response" + (rows.length === 1 ? "" : "s") + (rows.length >= 2000 ? " (showing the latest 2000, export to get these)" : ""))));
+      wrap.appendChild(h("div", { style: "margin-bottom:10px" }, h("h2", { style: "margin:0 0 4px" }, form.title), h("div", { class: "hint" }, (rows.some((r) => r.payment) ? "Paid " + rows.filter((r) => r.payment && r.payment.status === "paid").reduce((a, r) => a + Number(r.payment.amount || 0), 0).toFixed(2) + " USD from " + rows.filter((r) => r.payment && r.payment.status === "paid").length + " paid, " + rows.filter((r) => r.payment && r.payment.status !== "paid").length + " not paid. " : "") + rows.length + " response" + (rows.length === 1 ? "" : "s") + (rows.length >= 2000 ? " (showing the latest 2000, export to get these)" : ""))));
       const tabs = h("div", { class: "fe-tabs" });
       [["summary", "Summary"], ["list", "Responses"]].forEach(([k, l]) => tabs.appendChild(h("button", { type: "button", class: RS.tab === k ? "on" : "", onclick: () => { RS.tab = k; drawResponses(); } }, l)));
       wrap.appendChild(tabs);
@@ -764,14 +785,16 @@
       const { form, rows } = RS;
       const cols = form.fields.filter((x) => x.type !== "section").slice(0, 4);
       const tb = h("tbody");
+      const hasPay = rows.some((r) => r.payment);
       rows.forEach((r) => {
         const tr = h("tr", { class: "click" + (r.is_read ? "" : " fe-unread") },
           h("td", null, r.is_read ? null : h("span", { class: "fe-dot", title: "New" }), fmtStamp(r.created_at)),
-          cols.map((c) => h("td", null, valText(answerOf(r, c.id)).slice(0, 80))));
+          cols.map((c) => h("td", null, valText(answerOf(r, c.id)).slice(0, 80))),
+          hasPay ? h("td", null, payBadge(r)) : null);
         tr.addEventListener("click", () => openRow(r));
         tb.appendChild(tr);
       });
-      return h("div", { class: "table-wrap card" }, h("table", null, h("thead", null, h("tr", null, h("th", null, "Received"), cols.map((c) => h("th", null, c.label || "Question")))), tb));
+      return h("div", { class: "table-wrap card" }, h("table", null, h("thead", null, h("tr", null, h("th", null, "Received"), cols.map((c) => h("th", null, c.label || "Question")), hasPay ? h("th", null, "Payment") : null)), tb));
     }
 
     async function openRow(r) {
@@ -779,6 +802,10 @@
       (r.answers || []).forEach((a) => {
         dl.appendChild(h("div", { class: "fe-ans" }, h("dt", null, a.label || a.id), h("dd", null, valText(a.value) || "No answer")));
       });
+      if (r.payment) {
+        const p = r.payment;
+        dl.appendChild(h("div", { class: "fe-ans" }, h("dt", null, "Payment"), h("dd", null, ((PAY[p.status] || PAY.pending)[0]) + " " + Number(p.amount || 0).toFixed(2) + " USD" + (p.paid_at ? ", " + fmtStamp(p.paid_at) : "") + (p.apv ? ", approval " + p.apv : "") + "  (ref " + (p.tran_id || "") + ")")));
+      }
       const body = h("div", null, h("p", { class: "hint" }, "Received " + fmtStamp(r.created_at)), dl);
       const m = openModal("Response", "", "", true);
       m.querySelector(".modal-body").appendChild(body);
@@ -807,8 +834,9 @@
     function exportCsv() {
       const { form, rows } = RS;
       const cols = form.fields.filter((x) => x.type !== "section");
-      const lines = [["Received"].concat(cols.map((c) => c.label || c.id)).map(csvCell).join(",")];
-      rows.forEach((r) => lines.push([new Date(r.created_at).toISOString()].concat(cols.map((c) => answerOf(r, c.id))).map(csvCell).join(",")));
+      const hasPay = rows.some((r) => r.payment);
+      const lines = [["Received"].concat(cols.map((c) => c.label || c.id), hasPay ? ["Payment status", "Amount USD", "Paid at", "Reference"] : []).map(csvCell).join(",")];
+      rows.forEach((r) => lines.push([new Date(r.created_at).toISOString()].concat(cols.map((c) => answerOf(r, c.id)), hasPay ? (r.payment ? [r.payment.status, r.payment.amount, r.payment.paid_at || "", r.payment.tran_id || ""] : ["", "", "", ""]) : []).map(csvCell).join(",")));
       const blob = new Blob(["﻿" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);

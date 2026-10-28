@@ -88,3 +88,7 @@ select.fb-input option { color: #141414; }
 .fb-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 @media (prefers-reduced-motion: reduce) { .fb * { transition: none !important; } }
 @media (max-width: 480px) { .fb-card { padding: 18px 16px; } .fb-scale { gap: 6px; } }
+
+.fb-pay { display:flex; gap:16px; align-items:center; }
+.fb-pay-amt { font-family: var(--font-display, "Agrandir", "Outfit", "Helvetica Neue", Arial, sans-serif); font-size: 30px; font-weight: 700; letter-spacing: -.02em; white-space: nowrap; }
+.fb-pay-txt { color: var(--fb-muted); font-size: 14px; line-height: 1.5; }
