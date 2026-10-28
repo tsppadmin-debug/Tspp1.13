@@ -63,6 +63,7 @@
     { key: "partners", label: "Partners" },
     { key: "documents", label: "Invoices" },
     { key: "gallery", label: "Gallery" },
+    { key: "forms", label: "Forms" },
   ];
   const closedStage = (p) => p.stage === "won" || p.stage === "lost";
 
@@ -146,19 +147,22 @@
     $("#me-email").textContent = S.me.full_name || S.me.email;
     $("#me-role").textContent = S.me.role + (S.me.full_name ? " · " + S.me.email : "");
     $("#nav").innerHTML = Object.entries(VIEWS)
-      .filter(([, v]) => v.ok())
+      .filter(([, v]) => v.ok() && v.nav !== false)
       .map(([k, v]) => `<a href="#${k}" data-view="${k}">${esc(v.title)}</a>`)
       .join("");
   }
 
-  function go(view) {
+  function go(raw) {
+    const parts = String(raw || "").split("/");
+    let view = parts[0];
+    const param = parts.slice(1).join("/");
     if (!VIEWS[view] || !VIEWS[view].ok()) view = "overview";
     S.view = view;
     $$("#nav a").forEach((a) => a.classList.toggle("active", a.dataset.view === view));
     $("#view-title").textContent = VIEWS[view].title;
     $("#top-actions").innerHTML = "";
     $("#sidebar").classList.remove("open");
-    VIEWS[view].render();
+    VIEWS[view].render(view === parts[0] ? param : "");
   }
 
   const loading = () => '<div class="empty">Loading...</div>';
@@ -1088,5 +1092,17 @@
     if (S.me) go((location.hash || "").slice(1) || "overview");
   });
 
-  boot();
+  // Hook for add-on modules (admin-forms.js)
+  window.__admin = {
+    sb, S, $, $$, esc, toast, openModal, closeModal, loading, fail, fmtStamp, opts, can, isAdmin,
+    register(key, view) {
+      VIEWS[key] = view;
+      if (S.me) renderShell();
+    },
+  };
+  document.dispatchEvent(new Event("admin-ready"));
+
+  // Start after every script on the page has loaded, so add-on modules can register their views first
+  if (document.readyState === "complete") boot();
+  else window.addEventListener("load", boot);
 })();

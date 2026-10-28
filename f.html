@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#f6f3f2">
+<title>Form | The Social Phnom Penh</title>
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preload" href="/fonts/aileron-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/fonts.css">
+<link rel="stylesheet" href="/fb-form.css">
+<style>
+  html, body { margin: 0; background: #f6f3f2; }
+  @media (prefers-color-scheme: dark) { html.fb-auto, html.fb-auto body { background: #0d0d0d; } }
+  html.fb-dark, html.fb-dark body { background: #0d0d0d; }
+  .state { min-height: 100vh; display: grid; place-items: center; text-align: center; padding: 24px; font-family: "Aileron", "Helvetica Neue", Arial, sans-serif; color: #141414; }
+  .state h1 { font-family: "Agrandir", "Outfit", "Helvetica Neue", Arial, sans-serif; font-size: 28px; margin: 0 0 8px; }
+  .state p { margin: 0 0 18px; color: #6b6767; line-height: 1.6; max-width: 380px; }
+  .state a { color: inherit; font-weight: 600; }
+  .spin { width: 28px; height: 28px; border-radius: 50%; border: 3px solid #ddd; border-top-color: #141414; animation: sp .8s linear infinite; }
+  @keyframes sp { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div id="root"><div class="state"><div class="spin" role="status" aria-label="Loading"></div></div></div>
+<noscript><div class="state"><div><h1>JavaScript needed</h1><p>This form needs JavaScript to run. Turn it on and reload the page.</p></div></div></noscript>
+<script src="/fb-form.js"></script>
+<script>
+(function () {
+  var URL_ = "https://vxamxpmhgkgxwecdycjj.supabase.co";
+  var KEY = "sb_publishable_CRnwiQGclzMiH7AAlZi0tw_w4bkNp1T";
+  var root = document.getElementById("root");
+  var H = { apikey: KEY, Authorization: "Bearer " + KEY };
+
+  var m = /^\/f\/([a-z0-9-]+)\/?$/.exec(location.pathname);
+  var slug = m ? m[1] : (new URLSearchParams(location.search).get("s") || "").toLowerCase();
+
+  function state(title, text, home) {
+    root.textContent = "";
+    var s = document.createElement("div"); s.className = "state";
+    var box = document.createElement("div");
+    var h = document.createElement("h1"); h.textContent = title;
+    var p = document.createElement("p"); p.textContent = text;
+    box.appendChild(h); box.appendChild(p);
+    if (home) { var a = document.createElement("a"); a.href = "/"; a.textContent = "Back to The Social"; box.appendChild(a); }
+    s.appendChild(box); root.appendChild(s);
+  }
+
+  if (!/^[a-z0-9][a-z0-9-]{1,58}$/.test(slug)) { state("Form not found", "Check the link and try again.", true); return; }
+
+  fetch(URL_ + "/rest/v1/forms?select=id,slug,title,description,fields,status,theme,thank_you,closes_at,max_responses&slug=eq." + encodeURIComponent(slug), { headers: H })
+    .then(function (r) { if (!r.ok) throw new Error("http"); return r.json(); })
+    .then(function (rows) {
+      var f = rows && rows[0];
+      if (!f) { state("Form not found", "Check the link and try again.", true); return; }
+      document.title = f.title + " | The Social Phnom Penh";
+      var mode = (f.theme && f.theme.mode) || "light";
+      document.documentElement.classList.add("fb-" + mode);
+      var closed = f.status === "closed" || (f.closes_at && new Date(f.closes_at) < new Date());
+      if (closed) { state(f.title, "This form is closed and is no longer taking responses.", true); return; }
+      FB.render(root, f, {
+        brand: true,
+        onSubmit: function (answers, hp) {
+          return fetch(URL_ + "/rest/v1/rpc/submit_form", {
+            method: "POST",
+            headers: Object.assign({ "Content-Type": "application/json" }, H),
+            body: JSON.stringify({ p_slug: slug, p_answers: answers, p_hp: hp || "" })
+          }).then(function (r) {
+            return r.json().then(function (b) {
+              if (r.ok) return { ok: true, message: b && b.message };
+              return { ok: false, error: (b && b.message) || "" };
+            }, function () { return { ok: false, error: "" }; });
+          });
+        }
+      });
+    })
+    .catch(function () { state("Could not load the form", "Check your connection and refresh the page.", false); });
+})();
+</script>
+</body>
+</html>
