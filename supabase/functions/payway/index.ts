@@ -3,8 +3,8 @@
 // A POST with only { tran_id } and no action is treated as the PayWay pushback; it is never trusted,
 // the payment is always confirmed by asking PayWay (check-transaction-2).
 // Secrets: PAYWAY_MERCHANT_ID, PAYWAY_API_KEY, optional PAYWAY_ENV ("sandbox" default, or "live"), SITE_URL.
-const MID = Deno.env.get("PAYWAY_MERCHANT_ID") ?? "";
-const KEY = Deno.env.get("PAYWAY_API_KEY") ?? "";
+const MID = (Deno.env.get("PAYWAY_MERCHANT_ID") ?? "").trim();
+const KEY = (Deno.env.get("PAYWAY_API_KEY") ?? "").trim();
 const LIVE = (Deno.env.get("PAYWAY_ENV") ?? "sandbox") === "live";
 const BASE = LIVE ? "https://checkout.payway.com.kh" : "https://checkout-sandbox.payway.com.kh";
 const SITE = (Deno.env.get("SITE_URL") ?? "https://www.thesocialphnompenh.com").replace(/\/$/, "");
@@ -76,7 +76,9 @@ async function checkout(req: Request, tran: string) {
     currency: "USD",
     lifetime: "60",
   };
-  const hash = await sign(ORDER.map((k) => f[k] ?? "").join(""));
+  const hashInput = ORDER.map((k) => f[k] ?? "").join("");
+  const hash = await sign(hashInput);
+  console.log("payway checkout", JSON.stringify({ env: LIVE ? "live" : "sandbox", midLen: MID.length, keyLen: KEY.length, keyLooksHex: /^[0-9A-Fa-f]+$/.test(KEY), hashInput, hashLen: hash.length }));
   const fields: Record<string, string> = { hash };
   for (const k of ORDER) if (f[k]) fields[k] = f[k];
   return json(req, { action_url: `${BASE}/api/payment-gateway/v1/payments/purchase`, fields });
