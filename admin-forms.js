@@ -5,7 +5,7 @@
   function start() {
     const A = window.__admin;
     if (!A || !window.FB) return;
-    const { sb, S, $, esc, toast, openModal, closeModal, fmtStamp } = A;
+    const { sb, S, $, esc, toast, openModal, closeModal, fmtStamp, ask, toastUndo } = A;
 
     const STATUS = { draft: "Draft", published: "Live", closed: "Closed" };
     const STATUS_CLS = { draft: "s-draft", published: "s-won", closed: "s-lost" };
@@ -289,7 +289,7 @@
       const msg = n
         ? `Delete "${r.title}" and its ${n} response${n === 1 ? "" : "s"}? This cannot be undone. Export the responses first if you need them.`
         : `Delete "${r.title}"? This cannot be undone.`;
-      if (!confirm(msg)) return;
+      if (!(await ask(msg))) return;
       const { error } = await sb.from("forms").delete().eq("id", r.id);
       if (error) return toast(error.message, true);
       toast("Form deleted");
@@ -569,11 +569,18 @@
     }
     function delField(i) {
       const a = ED.form.fields;
-      if (a[i].label && !confirm('Delete "' + a[i].label + '"? Answers already collected stay in your responses.')) return;
+      const gone = a[i];
       a.splice(i, 1);
       ED.active = a[Math.min(i, a.length - 1)] ? a[Math.min(i, a.length - 1)].id : null;
       touch();
       drawQuestions($("#fe-list"));
+      toastUndo("Question deleted.", () => {
+        if (!ED) return;
+        ED.form.fields.splice(Math.min(i, ED.form.fields.length), 0, gone);
+        ED.active = gone.id;
+        touch();
+        if ($("#fe-list")) drawQuestions($("#fe-list"));
+      });
     }
 
     // ----- settings -----
@@ -777,7 +784,7 @@
       m.querySelector(".modal-body").appendChild(body);
       const foot = h("div", { class: "modal-foot" },
         h("button", { class: "btn danger small", type: "button", onclick: async () => {
-          if (!confirm("Delete this response? This cannot be undone.")) return;
+          if (!(await ask("Delete this response? This cannot be undone."))) return;
           const { error } = await sb.from("form_responses").delete().eq("id", r.id);
           if (error) return toast(error.message, true);
           RS.rows = RS.rows.filter((x) => x.id !== r.id);

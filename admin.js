@@ -39,6 +39,45 @@
     setTimeout(() => t.remove(), isErr ? 6000 : 3200);
   }
 
+  // Minimal in-page confirm (replaces the browser popup). Resolves true or false.
+  function ask(text, okLabel) {
+    return new Promise((resolve) => {
+      const box = document.createElement("div");
+      box.className = "ask-backdrop";
+      box.innerHTML = `<div class="ask" role="alertdialog" aria-modal="true"><p></p><div class="ask-row"><button class="btn light small" type="button" data-n>Cancel</button><button class="btn danger small" type="button" data-y></button></div></div>`;
+      box.querySelector("p").textContent = text;
+      box.querySelector("[data-y]").textContent = okLabel || "Delete";
+      const done = (v) => {
+        document.removeEventListener("keydown", key, true);
+        box.remove();
+        resolve(v);
+      };
+      const key = (e) => {
+        if (e.key === "Escape") { e.stopPropagation(); done(false); }
+      };
+      document.addEventListener("keydown", key, true);
+      box.addEventListener("mousedown", (e) => { if (e.target === box) done(false); });
+      box.querySelector("[data-n]").onclick = () => done(false);
+      box.querySelector("[data-y]").onclick = () => done(true);
+      document.body.appendChild(box);
+      box.querySelector("[data-n]").focus();
+    });
+  }
+
+  // toast with an Undo button
+  function toastUndo(msg, onUndo) {
+    const t = document.createElement("div");
+    t.className = "toast";
+    t.append(msg + "  ");
+    const b = document.createElement("button");
+    b.type = "button"; b.textContent = "Undo";
+    b.style.cssText = "background:none;border:0;color:inherit;text-decoration:underline;cursor:pointer;font:inherit;padding:0 0 0 6px";
+    b.onclick = () => { t.remove(); onUndo(); };
+    t.appendChild(b);
+    $("#toasts").appendChild(t);
+    setTimeout(() => t.remove(), 7000);
+  }
+
   function show(which) {
     ["boot", "login", "denied", "app"].forEach((id) => {
       $("#" + id).hidden = id !== which;
@@ -510,7 +549,7 @@
       const del = $("#pdel", m);
       if (del)
         del.onclick = async () => {
-          if (!confirm(`Delete ${p.name} and its activity log? This cannot be undone.`)) return;
+          if (!(await ask(`Delete ${p.name} and its activity log? This cannot be undone.`))) return;
           const { error } = await sb.from("partners").delete().eq("id", p.id);
           if (error) return toast(error.message, true);
           toast("Partner deleted");
@@ -741,7 +780,7 @@
       viewGallery();
     });
     $("#phdel", m).onclick = async () => {
-      if (!confirm("Remove this photo from the gallery? The file stays in your Cloudinary account.")) return;
+      if (!(await ask("Remove this photo from the gallery? The file stays in your Cloudinary account."))) return;
       const { error } = await sb.from("gallery_photos").delete().eq("id", p.id);
       if (error) return toast(error.message, true);
       toast("Photo removed");
@@ -836,7 +875,7 @@
         if (b.dataset.act === "view") previewDoc(d);
         if (b.dataset.act === "edit") openDoc(d);
         if (b.dataset.act === "del") {
-          if (!confirm(`Delete ${d.number}? This cannot be undone.`)) return;
+          if (!(await ask(`Delete ${d.number}? This cannot be undone.`))) return;
           const { error } = await sb.from("ts_documents").delete().eq("id", id);
           if (error) return toast(error.message, true);
           toast("Document deleted");
@@ -1074,7 +1113,7 @@
     if (del)
       del.onclick = async () => {
         if (u.role === "admin" && u.active && activeAdmins().length <= 1) return toast("There must be at least one active admin", true);
-        if (!confirm(`Remove ${u.email}? They will no longer be able to sign in.`)) return;
+        if (!(await ask(`Remove ${u.email}? They will no longer be able to sign in.`))) return;
         const { error } = await sb.from("admin_users").delete().eq("email", u.email);
         if (error) return toast(error.message, true);
         toast("Removed");
@@ -1094,7 +1133,7 @@
 
   // Hook for add-on modules (admin-forms.js)
   window.__admin = {
-    sb, S, $, $$, esc, toast, openModal, closeModal, loading, fail, fmtStamp, opts, can, isAdmin,
+    sb, S, $, $$, esc, toast, ask, toastUndo, openModal, closeModal, loading, fail, fmtStamp, opts, can, isAdmin,
     register(key, view) {
       VIEWS[key] = view;
       if (S.me) renderShell();
