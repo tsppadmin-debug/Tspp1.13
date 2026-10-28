@@ -268,7 +268,7 @@
     if (pay) {
       var pc = el("div", "fb-card fb-pay");
       pc.appendChild(el("div", "fb-pay-amt", "$" + Number(pay.amount).toFixed(2)));
-      pc.appendChild(el("div", "fb-pay-txt", (pay.description ? pay.description + ". " : "") + "After you submit, you pay securely on ABA PayWay with ABA Mobile, KHQR or card."));
+      pc.appendChild(el("div", "fb-pay-txt", (pay.description ? pay.description + ". " : "") + (pay.method === "payway" ? "After you submit, you pay securely on ABA PayWay with ABA Mobile, KHQR or card." : "After you submit, you will see our ABA QR to pay.")));
       formEl.appendChild(pc);
     }
 
@@ -319,6 +319,36 @@
       try { wrap.scrollIntoView({ block: "start" }); window.scrollTo(0, 0); } catch (e) {}
     }
 
+    function showManual(p, message) {
+      clearDraft();
+      formEl.hidden = true;
+      var cfg = form.payment || {};
+      var c = el("div", "fb-card fb-manual");
+      c.appendChild(el("h2", null, "Pay $" + Number(p.amount).toFixed(2)));
+      c.appendChild(el("p", "fb-manual-sub", "Your answers are saved. Scan with ABA Mobile or any KHQR banking app to pay."));
+      var imgs = el("div", "fb-manual-imgs");
+      (cfg.images || []).forEach(function (u) {
+        if (!httpsUrl(u)) return;
+        var im = el("img"); im.src = u; im.alt = "ABA payment QR"; im.loading = "eager";
+        imgs.appendChild(im);
+      });
+      if (imgs.children.length) c.appendChild(imgs);
+      if (cfg.instructions) c.appendChild(el("p", "fb-manual-ins", cfg.instructions));
+      var ref = el("div", "fb-manual-ref");
+      ref.appendChild(el("span", null, "Put this reference in the payment remark"));
+      ref.appendChild(el("strong", null, p.tran_id));
+      c.appendChild(ref);
+      var okb = el("button", "fb-submit", "I have paid");
+      okb.type = "button"; okb.style.marginTop = "18px";
+      okb.addEventListener("click", function () {
+        c.remove();
+        done((message || form.thank_you || "Thanks.") + "\n\nWe will check your payment and confirm it with you.");
+      });
+      c.appendChild(okb);
+      page.insertBefore(c, formEl);
+      try { c.scrollIntoView({ block: "start" }); } catch (e) {}
+    }
+
     formEl.addEventListener("submit", function (ev) {
       ev.preventDefault();
       if (sending) return;
@@ -345,10 +375,15 @@
         if (v == null || v === "" || (Array.isArray(v) && !v.length)) return;
         answers[f.id] = typeof v === "string" ? v.trim() : v;
       });
-      if (opts.preview) { done("This is a preview. Nothing was saved."); return; }
+      if (opts.preview) {
+        if (pay && pay.method !== "payway") showManual({ tran_id: "TSPREVIEW00", amount: pay.amount, method: "manual" }, "This is a preview. Nothing was saved.");
+        else done("This is a preview. Nothing was saved.");
+        return;
+      }
       sending = true; submit.disabled = true; submit.textContent = "Sending";
       Promise.resolve(opts.onSubmit(answers, hp.value)).then(function (res) {
         sending = false; submit.disabled = false; submit.textContent = submitLabel;
+        if (res && res.ok && res.pay && res.pay.method === "manual") { showManual(res.pay, res.message); return; }
         if (res && res.ok && res.pay && opts.onPay) {
           clearDraft();
           sending = true; submit.disabled = true; submit.textContent = "Opening ABA PayWay";

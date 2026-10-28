@@ -639,18 +639,62 @@
       if (fm.max_responses) max.value = fm.max_responses;
       max.addEventListener("input", () => { const n = parseInt(max.value, 10); fm.max_responses = n > 0 ? n : null; touch(); });
 
-      const payOn = h("input", { type: "checkbox", checked: !!fm.payment.enabled });
+      const pay0 = fm.payment || {};
+      const payOn = h("input", { type: "checkbox", checked: !!pay0.enabled });
       const payAmt = h("input", { class: "input", type: "number", min: "0.1", max: "5000", step: "0.01", placeholder: "10.00" });
-      if (fm.payment.amount) payAmt.value = fm.payment.amount;
+      if (pay0.amount) payAmt.value = pay0.amount;
       const payDesc = h("input", { class: "input", maxlength: "80", placeholder: "Entry fee, Ticket, Deposit" });
-      payDesc.value = fm.payment.description || "";
+      payDesc.value = pay0.description || "";
+      const payMethod = h("select", { class: "select" }, [["manual", "Show our ABA QR images"], ["payway", "ABA PayWay (online checkout)"]].map(([k, v]) => h("option", { value: k, selected: (pay0.method || "manual") === k }, v)));
+      const payIns = h("textarea", { class: "textarea", rows: "3", maxlength: "400", placeholder: "Account name, or anything people should know" });
+      payIns.value = pay0.instructions || "";
+      const imgBox = h("div", { class: "media-row", style: "flex-wrap:wrap;gap:10px;align-items:flex-start" });
       const syncPay = () => {
         const n = parseFloat(payAmt.value);
-        fm.payment = { enabled: payOn.checked && n >= 0.1, amount: n >= 0.1 ? Math.round(n * 100) / 100 : "", description: payDesc.value.trim(), currency: "USD" };
+        fm.payment = {
+          enabled: payOn.checked && n >= 0.1,
+          amount: n >= 0.1 ? Math.round(n * 100) / 100 : "",
+          description: payDesc.value.trim(),
+          currency: "USD",
+          method: payMethod.value,
+          instructions: payIns.value.trim(),
+          images: (fm.payment && fm.payment.images) || [],
+        };
         if (payOn.checked && !(n >= 0.1)) setSave("Enter a price of at least 0.10", true);
+        else if (payOn.checked && payMethod.value === "manual" && !fm.payment.images.length) setSave("Upload your ABA QR image", true);
         else touch();
       };
-      payOn.addEventListener("change", syncPay); payAmt.addEventListener("input", syncPay); payDesc.addEventListener("input", syncPay);
+      const drawImgs = () => {
+        imgBox.textContent = "";
+        ((fm.payment && fm.payment.images) || []).forEach((u, i) => {
+          const im = h("img", { src: u, alt: "ABA QR", style: "width:110px;height:auto;border-radius:10px;border:1px solid var(--line);display:block" });
+          const rm = h("button", { class: "btn light small", type: "button", style: "margin-top:6px;width:100%", onclick: () => { fm.payment.images.splice(i, 1); drawImgs(); syncPay(); } }, "Remove");
+          imgBox.appendChild(h("div", null, im, rm));
+        });
+        const file = h("input", { type: "file", accept: "image/png,image/jpeg,image/webp", multiple: true, style: "display:none" });
+        file.addEventListener("change", async () => {
+          const list = Array.from(file.files || []);
+          if (!list.length) return;
+          if (((fm.payment && fm.payment.images) || []).length + list.length > 4) return toast("Up to 4 images", true);
+          try {
+            for (const f of list) {
+              if (!/^image\/(png|jpeg|webp)$/.test(f.type)) throw new Error("Use a PNG, JPG or WebP image.");
+              if (f.size > 3 * 1024 * 1024) throw new Error("Image is over 3 MB. Please shrink it first.");
+              const ext = { "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp" }[f.type];
+              const path = "forms/" + fm.slug + "/pay-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6) + "." + ext;
+              const { error } = await sb.storage.from("partner-media").upload(path, f, { contentType: f.type, upsert: false });
+              if (error) throw error;
+              fm.payment = Object.assign({}, fm.payment, { images: ((fm.payment && fm.payment.images) || []).concat(sb.storage.from("partner-media").getPublicUrl(path).data.publicUrl) });
+            }
+            drawImgs(); syncPay();
+          } catch (e) { toast(e.message || String(e), true); }
+        });
+        imgBox.appendChild(h("button", { class: "btn light", type: "button", style: "height:48px", onclick: () => file.click() }, "Upload QR image"));
+        imgBox.appendChild(file);
+      };
+      drawImgs();
+      [payOn, payMethod].forEach((x) => x.addEventListener("change", syncPay));
+      [payAmt, payDesc, payIns].forEach((x) => x.addEventListener("input", syncPay));
 
       grid.append(
         field("Status", status, null),
@@ -661,10 +705,13 @@
         field("Message after submitting", thanks, null, true),
         field("Close automatically on", closes, "Optional. Uses your time zone."),
         field("Maximum responses", max, "Optional. The form closes when it is full."),
-        h("div", { class: "full sect" }, h("h3", null, "Payment with ABA PayWay"), h("div", { class: "hint" }, "People pay after they submit. A response only counts as paid once ABA PayWay confirms it."),
+        h("div", { class: "full sect" }, h("h3", null, "Payment"), h("div", { class: "hint" }, "People pay after they submit. With QR images they see your ABA QR and a reference code, and you mark the response as paid after checking your ABA app."),
           h("label", { class: "check", style: "margin-top:10px" }, payOn, "Ask for payment on this form")),
         field("Price in US dollars", payAmt, null),
-        field("What it is for", payDesc, "Shown next to the price.")
+        field("What it is for", payDesc, "Shown next to the price."),
+        field("How people pay", payMethod, null),
+        field("Notes under the QR", payIns, "Optional.", false),
+        h("div", { class: "full" }, h("label", { class: "f" }, "ABA QR images"), imgBox, h("div", { class: "hint" }, "PNG, JPG or WebP, up to 3 MB each. Shown when How people pay is QR images."))
       );
       card.appendChild(grid);
       wrap.appendChild(card);
@@ -804,7 +851,7 @@
       });
       if (r.payment) {
         const p = r.payment;
-        dl.appendChild(h("div", { class: "fe-ans" }, h("dt", null, "Payment"), h("dd", null, ((PAY[p.status] || PAY.pending)[0]) + " " + Number(p.amount || 0).toFixed(2) + " USD" + (p.paid_at ? ", " + fmtStamp(p.paid_at) : "") + (p.apv ? ", approval " + p.apv : "") + "  (ref " + (p.tran_id || "") + ")")));
+        dl.appendChild(h("div", { class: "fe-ans" }, h("dt", null, "Payment"), h("dd", null, ((PAY[p.status] || PAY.pending)[0]) + " " + Number(p.amount || 0).toFixed(2) + " USD" + (p.paid_at ? ", " + fmtStamp(p.paid_at) : "") + (p.apv ? ", approval " + p.apv : "") + (p.marked_by ? ", marked by " + p.marked_by : "") + "  (ref " + (p.tran_id || "") + ")")));
       }
       const body = h("div", null, h("p", { class: "hint" }, "Received " + fmtStamp(r.created_at)), dl);
       const m = openModal("Response", "", "", true);
@@ -818,12 +865,28 @@
           closeModal(); drawResponses(); toast("Response deleted");
         } }, "Delete"),
         h("span", { class: "spacer" }),
+        r.payment && r.payment.status !== "paid" ? h("button", { class: "btn", type: "button", onclick: () => setPaid(r, true) }, "Mark as paid") : null,
+        r.payment && r.payment.status === "paid" && r.payment.marked_by ? h("button", { class: "btn light", type: "button", onclick: () => setPaid(r, false) }, "Mark as unpaid") : null,
         h("button", { class: "btn light", type: "button", onclick: closeModal }, "Close"));
       m.querySelector(".modal").appendChild(foot);
       if (!r.is_read) {
         const { error } = await sb.from("form_responses").update({ is_read: true }).eq("id", r.id);
         if (!error) { r.is_read = true; const row = RS.rows.find((x) => x.id === r.id); if (row) row.is_read = true; if (RS.tab === "list" && $("#view table")) drawResponses(); }
       }
+    }
+
+    async function setPaid(r, paid) {
+      const p = paid
+        ? Object.assign({}, r.payment, { status: "paid", paid_at: new Date().toISOString(), marked_by: A.S.me.email })
+        : Object.assign({}, r.payment, { status: "pending", paid_at: null, marked_by: null });
+      const { error } = await sb.from("form_responses").update({ payment: p }).eq("id", r.id);
+      if (error) return toast(error.message, true);
+      r.payment = p;
+      const row = RS.rows.find((x) => x.id === r.id);
+      if (row) row.payment = p;
+      closeModal();
+      drawResponses();
+      toast(paid ? "Marked as paid" : "Marked as unpaid");
     }
 
     function csvCell(v) {
