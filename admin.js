@@ -103,6 +103,7 @@
     { key: "documents", label: "Invoices" },
     { key: "gallery", label: "Gallery" },
     { key: "forms", label: "Forms" },
+    { key: "community", label: "Community" },
   ];
   const closedStage = (p) => p.stage === "won" || p.stage === "lost";
 
@@ -372,6 +373,22 @@
             : '<div class="empty">No responses yet. Share a form link.</div>'
         }</div>`);
         actions.push(["forms", "New form"]);
+      }
+    }
+
+    // ---------- community ----------
+    if (can("community")) {
+      const [pc, rc, ec] = await Promise.all([
+        sb.from("attendees").select("id", { count: "exact", head: true }),
+        sb.from("event_registrations").select("id", { count: "exact", head: true }),
+        sb.from("events").select("id,event_name,date").order("date", { ascending: false }).limit(1),
+      ]);
+      if (!pc.error && !rc.error) {
+        stats.push(
+          { g: "Community", l: "Community members", v: pc.count || 0, s: "people who joined an event" },
+          { g: "Community", l: "Event sign ups", v: rc.count || 0, s: pc.count ? (rc.count / pc.count).toFixed(1) + " events per person" : "" }
+        );
+        actions.push(["community", "Open community"]);
       }
     }
 
@@ -1235,7 +1252,7 @@
 
   // Hook for add-on modules (admin-forms.js)
   window.__admin = {
-    sb, S, $, $$, esc, toast, ask, toastUndo, openModal, closeModal, loading, fail, fmtStamp, opts, can, isAdmin,
+    sb, S, $, $$, esc, toast, ask, toastUndo, fmtDate, openModal, closeModal, loading, fail, fmtStamp, opts, can, isAdmin,
     register(key, view) {
       VIEWS[key] = view;
       if (S.me) renderShell();
