@@ -242,55 +242,157 @@
     const root = $("#view");
     root.innerHTML = loading();
     const t = today();
-    let html = "";
+    const now = new Date();
     const stats = [];
-    const lists = [];
+    const panels = [];
+    const bar = (label, n, max, tone) =>
+      `<div class="ov-bar"><div class="ov-bar-top"><span>${esc(label)}</span><span>${esc(n)}</span></div><div class="ov-track"><i style="width:${max ? Math.max(2, Math.round((parseFloat(n) / max) * 100)) : 0}%"${tone ? ` class="${tone}"` : ""}></i></div></div>`;
+    const ago = (d) => {
+      const m = Math.round((Date.now() - new Date(d).getTime()) / 60000);
+      if (m < 1) return "just now";
+      if (m < 60) return m + " min ago";
+      if (m < 1440) return Math.round(m / 60) + " h ago";
+      return Math.round(m / 1440) + " d ago";
+    };
+    const actions = [];
 
+    // ---------- partners ----------
     if (can("partners")) {
-      const { data, error } = await sb.from("partners").select("id,name,stage,value_usd,next_follow_up,contact_name");
-      if (error) return fail(root, error);
+      const [pr, ar] = await Promise.all([
+        sb.from("partners").select("id,name,category,stage,value_usd,next_follow_up,contact_name,published,created_at"),
+        sb.from("partner_activities").select("id,partner_id,kind,note,created_by,created_at").order("created_at", { ascending: false }).limit(6),
+      ]);
+      if (pr.error) return fail(root, pr.error);
+      const data = pr.data;
       const open = data.filter((p) => !closedStage(p));
       const won = data.filter((p) => p.stage === "won");
       const due = open.filter((p) => p.next_follow_up && p.next_follow_up <= t).sort((a, b) => a.next_follow_up.localeCompare(b.next_follow_up));
+      const sum = (a) => a.reduce((x, p) => x + Number(p.value_usd || 0), 0);
       stats.push(
-        { l: "Open partners", v: open.length, s: money(open.reduce((a, p) => a + Number(p.value_usd), 0)) + " in pipeline" },
-        { l: "Won", v: won.length, s: money(won.reduce((a, p) => a + Number(p.value_usd), 0)) + " secured" },
-        { l: "Follow-ups due", v: due.length, s: due.length ? "Needs a nudge today" : "All caught up" }
+        { g: "Partners", l: "Partners total", v: data.length, s: data.filter((p) => p.published).length + " shown on website" },
+        { g: "Partners", l: "Open deals", v: open.length, s: money(sum(open)) + " in pipeline" },
+        { g: "Partners", l: "Won", v: won.length, s: money(sum(won)) + " secured" },
+        { g: "Partners", l: "Follow-ups due", v: due.length, s: due.length ? "Needs a nudge today" : "All caught up" }
       );
-      lists.push(`<div class="card"><h2>Partner follow-ups due</h2>${
+      const maxStage = Math.max(1, ...Object.keys(STAGES).map((k) => data.filter((p) => p.stage === k).length));
+      panels.push(`<div class="card"><h2>Partner pipeline</h2>${Object.entries(STAGES).map(([k, v]) => bar(v, data.filter((p) => p.stage === k).length, maxStage)).join("")}</div>`);
+      const cats = Object.entries(CATEGORIES).map(([k, v]) => [v, data.filter((p) => p.category === k).length]).filter((x) => x[1]);
+      const maxCat = Math.max(1, ...cats.map((x) => x[1]));
+      panels.push(`<div class="card"><h2>Partners by type</h2>${cats.length ? cats.map(([v, n]) => bar(v, n, maxCat, "alt")).join("") : '<div class="empty">No partners yet.</div>'}</div>`);
+      panels.push(`<div class="card"><h2>Partner follow-ups due</h2>${
         due.length
           ? due.slice(0, 8).map((p) => `<div class="list-row"><div><a href="#partners" data-open-partner="${esc(p.id)}" class="link">${esc(p.name)}</a><div class="sub">${esc(p.contact_name || "No contact")}</div></div><div class="overdue">${fmtDate(p.next_follow_up)}</div></div>`).join("")
           : '<div class="empty">Nothing due. Nice.</div>'
       }</div>`);
+      const nameOf = Object.fromEntries(data.map((p) => [p.id, p.name]));
+      const acts = (ar.data || []);
+      panels.push(`<div class="card"><h2>Latest partner activity</h2>${
+        acts.length
+          ? acts.map((a) => `<div class="list-row"><div><strong>${esc(nameOf[a.partner_id] || "Partner")}</strong><div class="sub">${esc(ACT_KINDS[a.kind] || a.kind)}: ${esc((a.note || "").slice(0, 70))}</div></div><div class="sub">${ago(a.created_at)}</div></div>`).join("")
+          : '<div class="empty">No activity logged yet.</div>'
+      }</div>`);
+      actions.push(["partners", "Add a partner"]);
     }
 
+    // ---------- invoices ----------
     if (can("documents")) {
-      const { data, error } = await sb.from("ts_documents").select("id,number,doc_type,status,total,due_date,client_name");
+      const { data, error } = await sb.from("ts_documents").select("id,number,doc_type,status,total,due_date,issued_date,client_name");
       if (error) return fail(root, error);
       const invoices = data.filter((d) => d.doc_type === "invoice");
+      const quotes = data.filter((d) => d.doc_type !== "invoice");
       const sent = invoices.filter((d) => d.status === "sent");
       const overdue = sent.filter((d) => d.due_date && d.due_date < t);
       const paid = invoices.filter((d) => d.status === "paid");
+      const tot = (a) => a.reduce((x, d) => x + Number(d.total || 0), 0);
+      const ym = (d) => String(d || "").slice(0, 7);
+      const thisMonth = paid.filter((d) => ym(d.issued_date) === t.slice(0, 7));
       stats.push(
-        { l: "Outstanding", v: money(sent.reduce((a, d) => a + Number(d.total), 0)), s: sent.length + " invoice" + (sent.length === 1 ? "" : "s") + " sent" },
-        { l: "Overdue", v: overdue.length, s: money(overdue.reduce((a, d) => a + Number(d.total), 0)) },
-        { l: "Paid (all time)", v: money(paid.reduce((a, d) => a + Number(d.total), 0)), s: paid.length + " invoice" + (paid.length === 1 ? "" : "s") }
+        { g: "Money", l: "Outstanding", v: money(tot(sent)), s: sent.length + " invoice" + (sent.length === 1 ? "" : "s") + " sent" },
+        { g: "Money", l: "Overdue", v: overdue.length, s: money(tot(overdue)) },
+        { g: "Money", l: "Paid this month", v: money(tot(thisMonth)), s: thisMonth.length + " invoice" + (thisMonth.length === 1 ? "" : "s") },
+        { g: "Money", l: "Paid all time", v: money(tot(paid)), s: paid.length + " invoice" + (paid.length === 1 ? "" : "s") + " and " + quotes.length + " quote" + (quotes.length === 1 ? "" : "s") }
       );
-      lists.push(`<div class="card"><h2>Invoices waiting on payment</h2>${
+      const months = [];
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        months.push({ key: d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"), name: d.toLocaleString("en-GB", { month: "short" }) });
+      }
+      months.forEach((m) => (m.paid = tot(paid.filter((d) => ym(d.issued_date) === m.key))));
+      const mx = Math.max(1, ...months.map((m) => m.paid));
+      panels.push(`<div class="card"><h2>Paid invoices, last 6 months</h2><div class="ov-cols">${months.map((m) => `<div class="ov-col"><div class="ov-col-v">${m.paid ? esc(money(m.paid).replace(".00", "")) : ""}</div><div class="ov-col-bar"><i style="height:${m.paid ? Math.max(4, Math.round((m.paid / mx) * 100)) : 0}%"></i></div><div class="ov-col-l">${esc(m.name)}</div></div>`).join("")}</div></div>`);
+      panels.push(`<div class="card"><h2>Invoices waiting on payment</h2>${
         sent.length
           ? sent.sort((a, b) => (a.due_date || "9999").localeCompare(b.due_date || "9999")).slice(0, 8).map((d) => `<div class="list-row"><div><strong>${esc(d.number)}</strong><div class="sub">${esc(d.client_name)}</div></div><div style="text-align:right">${money(d.total)}<div class="sub ${d.due_date && d.due_date < t ? "overdue" : ""}">due ${fmtDate(d.due_date)}</div></div></div>`).join("")
           : '<div class="empty">No unpaid invoices.</div>'
       }</div>`);
+      actions.push(["documents", "New invoice"]);
+    }
+
+    // ---------- gallery ----------
+    if (can("gallery")) {
+      const { data, error } = await sb.from("gallery_photos").select("collection,published,created_at");
+      if (error) return fail(root, error);
+      const by = (k) => data.filter((p) => p.collection === k).length;
+      stats.push(
+        { g: "Gallery", l: "Photos", v: data.length, s: data.filter((p) => !p.published).length + " hidden" },
+        { g: "Gallery", l: "Social Saturday", v: by("saturday"), s: "day collection" },
+        { g: "Gallery", l: "Social Night", v: by("wednesday"), s: "night collection" }
+      );
+      const mxg = Math.max(1, by("saturday"), by("wednesday"));
+      panels.push(`<div class="card"><h2>Gallery by collection</h2>${bar("Social Saturday", by("saturday"), mxg)}${bar("Social Night", by("wednesday"), mxg, "alt")}<p class="sub" style="margin-top:12px">Last upload ${data.length ? ago(data.map((p) => p.created_at).sort().pop()) : "never"}</p></div>`);
+      actions.push(["gallery", "Upload photos"]);
+    }
+
+    // ---------- forms ----------
+    if (can("forms")) {
+      const [fr, rr] = await Promise.all([
+        sb.from("forms").select("id,title,status"),
+        sb.from("form_responses").select("id,form_id,is_read,created_at,answers").order("created_at", { ascending: false }).limit(500),
+      ]);
+      if (!fr.error && !rr.error) {
+        const forms = fr.data;
+        const resp = rr.data;
+        const weekAgo = Date.now() - 7 * 864e5;
+        const unread = resp.filter((r) => !r.is_read);
+        stats.push(
+          { g: "Forms", l: "Live forms", v: forms.filter((f) => f.status === "published").length, s: forms.length + " in total" },
+          { g: "Forms", l: "Responses", v: resp.length, s: resp.filter((r) => new Date(r.created_at).getTime() > weekAgo).length + " in the last 7 days" },
+          { g: "Forms", l: "New to read", v: unread.length, s: unread.length ? "Waiting for you" : "All read" }
+        );
+        const title = Object.fromEntries(forms.map((f) => [f.id, f.title]));
+        const per = forms.map((f) => [f.title, resp.filter((r) => r.form_id === f.id).length]).sort((a, b) => b[1] - a[1]).slice(0, 5);
+        const mxf = Math.max(1, ...per.map((x) => x[1]));
+        panels.push(`<div class="card"><h2>Responses by form</h2>${per.length ? per.map(([n, c]) => bar(n, c, mxf)).join("") : '<div class="empty">No forms yet.</div>'}</div>`);
+        panels.push(`<div class="card"><h2>Latest form responses</h2>${
+          resp.length
+            ? resp.slice(0, 6).map((r) => {
+                const first = (r.answers || []).map((a) => (Array.isArray(a.value) ? a.value.join(", ") : a.value)).find((v) => v) || "";
+                return `<div class="list-row"><div><a class="link" href="#forms/r/${esc(r.form_id)}">${r.is_read ? "" : '<span class="ov-dot"></span>'}${esc(String(first).slice(0, 40) || "Response")}</a><div class="sub">${esc(title[r.form_id] || "Form")}</div></div><div class="sub">${ago(r.created_at)}</div></div>`;
+              }).join("")
+            : '<div class="empty">No responses yet. Share a form link.</div>'
+        }</div>`);
+        actions.push(["forms", "New form"]);
+      }
+    }
+
+    // ---------- team ----------
+    if (isAdmin()) {
+      const { data } = await sb.from("admin_users").select("email,role,active");
+      if (data) stats.push({ g: "Team", l: "Team members", v: data.filter((u) => u.active).length, s: data.filter((u) => u.role === "admin" && u.active).length + " admin" + (data.filter((u) => u.role === "admin" && u.active).length === 1 ? "" : "s") });
     }
 
     if (!stats.length) {
-      html = '<div class="card"><h2>Welcome</h2><p class="sub">You are signed in, but no modules are assigned to you yet. Ask an admin to give you access.</p></div>';
-    } else {
-      html =
-        `<div class="grid stats">${stats.map((s) => `<div class="card stat"><div class="label">${esc(s.l)}</div><div class="value">${esc(s.v)}</div><div class="sub">${esc(s.s)}</div></div>`).join("")}</div>` +
-        `<div class="grid two">${lists.join("")}</div>`;
+      root.innerHTML = '<div class="card"><h2>Welcome</h2><p class="sub">You are signed in, but no modules are assigned to you yet. Ask an admin to give you access.</p></div>';
+      return;
     }
-    root.innerHTML = html;
+    const hr = now.getHours();
+    const hello = hr < 12 ? "Good morning" : hr < 18 ? "Good afternoon" : "Good evening";
+    const first = (S.me.full_name || S.me.email || "").split(/[ @]/)[0];
+    root.innerHTML =
+      `<div class="ov-hello"><div><h2>${hello}${first ? ", " + esc(first) : ""}</h2><p class="sub">${esc(now.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" }))}</p></div>` +
+      `<div class="ov-actions">${actions.map(([v, l]) => `<a class="btn light small" href="#${v}">${esc(l)}</a>`).join("")}</div></div>` +
+      `<div class="grid stats">${stats.map((s) => `<div class="card stat"><div class="label">${esc(s.l)}</div><div class="value">${esc(s.v)}</div><div class="sub">${esc(s.s)}</div></div>`).join("")}</div>` +
+      `<div class="grid two ov-panels">${panels.join("")}</div>`;
     $$("[data-open-partner]", root).forEach((a) =>
       a.addEventListener("click", (e) => {
         e.preventDefault();

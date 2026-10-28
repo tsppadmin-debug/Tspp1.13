@@ -234,6 +234,25 @@
       .ask { background: #fff; border-radius: 14px; padding: 20px; max-width: 360px; width: 100%; box-shadow: 0 12px 40px rgba(0,0,0,.18); }
       .ask p { margin: 0 0 16px; line-height: 1.5; font-size: 15px; }
       .ask-row { display: flex; gap: 8px; justify-content: flex-end; }
+      .ov-hello { display:flex; justify-content:space-between; align-items:flex-end; gap:12px; flex-wrap:wrap; margin-bottom:18px; }
+      .ov-hello h2 { margin:0; font-size:24px; }
+      .ov-hello .sub { margin:2px 0 0; color:var(--muted); }
+      .ov-actions { display:flex; gap:8px; flex-wrap:wrap; }
+      .ov-actions a { text-decoration:none; }
+      .ov-panels { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+      .ov-bar { margin:12px 0; font-size:14px; }
+      .ov-bar-top { display:flex; justify-content:space-between; gap:10px; margin-bottom:5px; }
+      .ov-track { height:8px; background:var(--soft); border-radius:99px; overflow:hidden; }
+      .ov-track i { display:block; height:100%; background:var(--ink); border-radius:99px; }
+      .ov-track i.alt { background:var(--accent-deep); }
+      .ov-cols { display:grid; grid-template-columns:repeat(6,1fr); gap:10px; align-items:end; height:190px; margin-top:12px; }
+      .ov-col { display:flex; flex-direction:column; height:100%; text-align:center; min-width:0; }
+      .ov-col-v { font-size:11px; color:var(--muted); height:16px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+      .ov-col-bar { flex:1; display:flex; align-items:flex-end; background:var(--soft); border-radius:8px; overflow:hidden; }
+      .ov-col-bar i { display:block; width:100%; background:var(--accent-deep); }
+      .ov-col-l { font-size:12px; color:var(--muted); margin-top:6px; }
+      .ov-dot { display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--accent-deep); margin-right:8px; }
+      @media (max-width:640px) { .ov-panels { grid-template-columns:1fr; } }
       .check { display: flex; gap: 8px; align-items: center; font-size: 14px; }
       label.f { display: block; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
       .hint { color: var(--muted); font-size: 12px; margin-top: 4px; }
